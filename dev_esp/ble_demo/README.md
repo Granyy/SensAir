@@ -1,6 +1,6 @@
 # BLE Demonstrator
 
-Starts a service and a characteristic to write or to read
-Based on esp32-spinnets C++ classes
+- Start two services with one characteristic to write or to read a value
+- Based on esp32-snippets C++ classes  (https://github.com/nkolban/esp32-snippets) 
 
 ![Server representation on NRF Connect](nrf_connect.png)
