@@ -45,7 +45,6 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
     }
 };
 
-static char LOG_TAG[] = "SampleServer";
 
 class MainBLEServer: public Task {
 	void run(void *data) {
@@ -57,19 +56,30 @@ class MainBLEServer: public Task {
 
 		BLECharacteristic* pCharacteristic = pService->createCharacteristic(
 			BLEUUID("0d563a58-196a-48ce-ace2-dfec78acc814"),
-			BLECharacteristic::PROPERTY_BROADCAST | BLECharacteristic::PROPERTY_READ  |
-			BLECharacteristic::PROPERTY_NOTIFY    | BLECharacteristic::PROPERTY_WRITE |
-			BLECharacteristic::PROPERTY_INDICATE
+			BLECharacteristic::PROPERTY_READ
 		);
 
         
 	    pCharacteristic->setCallbacks(new MyCallbackHandler());
-		pCharacteristic->setValue("Hello World!");
+		pCharacteristic->setValue("READ");
 
 		pService->start();
 
+        BLEService* myService = pServer->createService("3978601c-634d-41c1-a33f-dbdd92b68dbf");
+
+        BLECharacteristic* myCharacteristic = myService->createCharacteristic(
+			BLEUUID("16ce95bb-8ce1-48ff-8043-680cb323324d"),
+			BLECharacteristic::PROPERTY_WRITE
+		);
+
+        myCharacteristic->setCallbacks(new MyCallbackHandler());
+		myCharacteristic->setValue("WRITE");
+
+		myService->start();
+
 		BLEAdvertising* pAdvertising = pServer->getAdvertising();
 		pAdvertising->addServiceUUID(BLEUUID(pService->getUUID()));
+        pAdvertising->addServiceUUID(BLEUUID(myService->getUUID()));
 		pAdvertising->start();
 		delay(1000000);
 	}
