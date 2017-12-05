@@ -1,11 +1,9 @@
 #include <esp_log.h>
-#include <FreeRTOS.h>
 #include <string>
-#include <Task.h>
-#include <I2C.h>
 #include <iostream>
 #include "sdkconfig.h"
 #include <math.h>
+#include "driver/i2c.h"
 
 #define SDA_PIN 22
 #define SCL_PIN 26
@@ -163,8 +161,8 @@ void I2C_demo() {
 		cout << "CO (ppm): " << c << endl;
 		vTaskDelay(2000/ portTICK_RATE_MS);
 		I2C_write(ADDR_GROVE,CMD_CONTROL_LED,0x00);
-		value = I2C_read_2_bytes(ADDR_GROVE, CH_VALUE_CO);
-		value2 = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_FACTORY_ADC_CO);
+		value = I2C_read_2_bytes(ADDR_GROVE, CH_VALUE_NO2);
+		value2 = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_FACTORY_ADC_NO2);
 		
 		ratio = (float)value/(float)value2*(1023.0-value2)/(1023.0-value);
 		cout << "Ratio: " << ratio << endl;
