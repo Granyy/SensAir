@@ -4,39 +4,15 @@
 #include "sdkconfig.h"
 #include <math.h>
 #include "driver/i2c.h"
+#include <cstring>
 
 #define SDA_PIN 22
-#define SCL_PIN 26
+#define SCL_PIN 21
+#define MICS_VZ_89TE_ADDR      0x70 //0x70 default I2C address
+//registers
+#define MICS_VZ_89TE_ADDR_CMD_GETSTATUS	0x0C	// This command is used to read the VZ89 status coded with 6 bytes:
+#define MICS_VZ_89TE_DATE_CODE 0x0D
 
-#define ADDR_GROVE    0x04
-
-#define ADDR_IS_SET             0           // if this is the first time to run, if 1126, set 
-#define ADDR_FACTORY_ADC_NH3    2
-#define ADDR_FACTORY_ADC_CO     4
-#define ADDR_FACTORY_ADC_NO2    6
-
-#define ADDR_USER_ADC_HN3       8
-#define ADDR_USER_ADC_CO        10
-#define ADDR_USER_ADC_NO2       12
-#define ADDR_IF_CALI            14          // IF USER HAD CALI
-
-#define ADDR_I2C_ADDRESS        20
-
-#define CH_VALUE_NH3            1
-#define CH_VALUE_CO             2
-#define CH_VALUE_NO2            3
-
-#define CMD_ADC_RES0            1           // NH3
-#define CMD_ADC_RES1            2           // CO
-#define CMD_ADC_RES2            3           // NO2
-#define CMD_ADC_RESALL          4           // ALL CHANNEL
-#define CMD_CHANGE_I2C          5           // CHANGE I2C
-#define CMD_READ_EEPROM         6           // READ EEPROM VALUE, RETURN UNSIGNED INT
-#define CMD_SET_R0_ADC          7           // SET R0 ADC VALUE
-#define CMD_GET_R0_ADC          8           // GET R0 ADC VALUE
-#define CMD_GET_R0_ADC_FACTORY  9           // GET FACTORY R0 ADC VALUE
-#define CMD_CONTROL_LED         10
-#define CMD_CONTROL_PWR         11
 #define ACK_CHECK_EN                       0x1              /*!< I2C master will check ack from slave*/
 #define ACK_CHECK_DIS                      0x0              /*!< I2C master will not check ack from slave */
 #define ACK_VAL                            0x0              /*!< I2C ack value */
@@ -63,36 +39,64 @@ void I2C_config() {
 }
 
 
-uint16_t I2C_read_2_bytes(uint8_t addrDev, uint8_t addrReg) {
-	unsigned char byte1;
-	unsigned char byte2;
-	int value;
+void I2C_read_7_bytes(uint8_t addrDev, uint8_t addrReg, uint8_t data[]) {
 	int ret;
 	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+	if (cmd == NULL) {
+		cout << "C'est pas cool :(" << endl;
+	}
 	i2c_master_start(cmd);
 	i2c_master_write_byte(cmd, (addrDev << 1) | I2C_MASTER_WRITE, ACK_CHECK_EN);
-	i2c_master_write_byte(cmd, addrReg, ACK_CHECK_EN);
+	i2c_master_write_byte(cmd, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, ACK_CHECK_EN);
+	i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN);
+	i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN);
+	i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN);
+	i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN);
+	i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN);
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
+	//vTaskDelay(30 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
 	if (ret != ESP_OK) {
         	cout << "Problem i2c write" << endl;
+			cout << hex << ret << dec << endl;
     }
-    vTaskDelay(30 / portTICK_RATE_MS);
+	//vTaskDelay(30 / portTICK_RATE_MS);
+	cmd = i2c_cmd_link_create();
+	i2c_master_start(cmd);
+	i2c_master_write_byte(cmd, (addrDev << 1) | I2C_MASTER_READ, ACK_VAL);
+	//i2c_master_stop(cmd);
+	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
+    if (ret != ESP_OK) {
+        cout << "Problem i2c weird" << endl;
+    }
+	i2c_cmd_link_delete(cmd);
+	
+    vTaskDelay(100 / portTICK_RATE_MS);
     cmd = i2c_cmd_link_create();
-    i2c_master_start(cmd);
+   	i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (addrDev << 1)| I2C_MASTER_READ, ACK_CHECK_EN);
-	i2c_master_read_byte(cmd, &byte1, ACK_VAL);
-	i2c_master_read_byte(cmd, &byte2, NACK_VAL);
+	i2c_master_read_byte(cmd, &data[0], ACK_VAL);
+	i2c_master_read_byte(cmd, &data[1], ACK_VAL);
+	i2c_master_read_byte(cmd, &data[2], ACK_VAL);
+	i2c_master_read_byte(cmd, &data[3], ACK_VAL);
+	i2c_master_read_byte(cmd, &data[4], ACK_VAL);
+	i2c_master_read_byte(cmd, &data[5], ACK_VAL);
+	i2c_master_read_byte(cmd, &data[6], NACK_VAL);
 	i2c_master_stop(cmd);
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000/portTICK_PERIOD_MS);
 	if (ret != ESP_OK) {
         	cout << "Problem i2c read" << endl;
     }
 	i2c_cmd_link_delete(cmd);
-	cout << (int)byte1 << " " <<(int)byte2 << endl;
-	value = (byte1 << 8) + (byte2);
-	cout << "Value: " << value << endl;
-	return value;
+	cout << "LSB" << endl;
+	cout << "LSB" << endl;
+	cout << "|" << (int)data[0] << "|" << (int)data[1] <<"|" << (int)data[2] <<"|" << (int)data[3] <<"|" << (int)data[4] <<"|" << (int)data[5] <<"|" << (int)data[6] << endl; 
+	//int status = data[5];
+    //int co2 = (data[1] - 13) * (1600.0 / 229) + 400; // ppm: 400 .. 2000
+    //int voc = (data[0] - 13) * (1000.0/229); // ppb: 0 .. 1000
+	//cout << "Status: " << (int)status << endl;
+	//cout << "co2: " << co2 << endl;
+	//cout << "voc: " << voc << endl;
 }
 
 uint16_t I2C_read_2_bytes_data(uint8_t addrDev, uint8_t addrReg, uint8_t addrDta) {
@@ -144,32 +148,19 @@ void I2C_write(uint8_t addrDev, uint8_t addrReg, uint8_t data) {
 }
 
 void I2C_demo() {
-	int value, value2;
-	float ratio, c;
+	uint8_t data[7];
 	I2C_config();
-	value = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_IS_SET);
-	cout << "Version " << value << endl;
-	
-	while (1) {
-		
-		value = I2C_read_2_bytes(ADDR_GROVE, CH_VALUE_CO);
-		value2 = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_FACTORY_ADC_CO);
-		
-		ratio = (float)value/(float)value2*(1023.0-value2)/(1023.0-value);
-		cout << "ratio: " << ratio << endl;
-		c = pow(ratio, -1.179)*4.385;
-		cout << "CO (ppm): " << c << endl;
-		vTaskDelay(2000/ portTICK_RATE_MS);
-		I2C_write(ADDR_GROVE,CMD_CONTROL_LED,0x00);
-		value = I2C_read_2_bytes(ADDR_GROVE, CH_VALUE_NO2);
-		value2 = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_FACTORY_ADC_NO2);
-		
-		ratio = (float)value/(float)value2*(1023.0-value2)/(1023.0-value);
-		cout << "Ratio: " << ratio << endl;
-		c = pow(ratio, -1.007)/6.855;
-		cout << "NO2 (ppm): " << c << endl;
-		vTaskDelay(2000/ portTICK_RATE_MS);
-		I2C_write(ADDR_GROVE,CMD_CONTROL_LED,0x01);
+	cout << "I2C config OK" << endl;
+	vTaskDelay(1000 / portTICK_RATE_MS);
+	while(1) {
+		cout << "11111" << endl;
+		I2C_read_7_bytes(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, data);
+		vTaskDelay(1000 / portTICK_RATE_MS);
+		memset(data,0,sizeof(data));
+		cout << "22222" << endl;
+		I2C_read_7_bytes(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, data);
+		vTaskDelay(1000 / portTICK_RATE_MS);
+		memset(data,0,sizeof(data));
 	}
 }
 
