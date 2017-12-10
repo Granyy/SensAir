@@ -50,57 +50,42 @@ using namespace std;
 #define CMD_CONTROL_LED         10
 #define CMD_CONTROL_PWR         11
 
+#define ACK_VAL                 0x0
+#define NACK_VAL                0x1  
 
-#define ACK_VAL                            0x0
-#define NACK_VAL                           0x1  
-
-enum{CO, NO2, NH3, C3H8, C4H10, CH4, H2, C2H5OH};
+enum{CO, NO2, NH3};
 
 class GroveGasSensor{
 
 private:
 
     int __version;
-    unsigned char dta_test[20];
     
 public:
-
-    //uint16_t res0[3];       //sensors res0
-    //uint16_t res[3];        //sensors res
-    //bool r0_inited;
-
 
     inline uint16_t get_addr_dta(uint8_t addrDev, uint8_t addrReg);
     inline uint16_t get_addr_dta(uint8_t addrDev, uint8_t addrReg, uint8_t addrDta);
     inline void write_i2c(uint8_t addrDev, uint8_t addrReg, uint8_t data);
-
-    //void sendI2C(unsigned char dta); pour envoyer un nombre de bits définis ?
-    // inline void write_i2c(uint8_t addrDev, uint8_t addrReg, uint8_t* data); len needed ?
-    //int16_t readData(uint8_t cmd); pour lire plus de deux bits ?
-    // inline uint8_t* get_addr_dta(uint8_t addrDev, uint8_t addrReg);
-    //int16_t readR0(void);
-    //int16_t readR(void);
+    inline void write_i2c(uint8_t addrDev, uint8_t* data);
     float calc_gas(int gas);
     
 public:
 
-    void begin(int address);
-    void begin();
-    //void powerOn(void);
-    //void powerOff(void);
+    void power_on();
+    void power_off();
     
     float measure_CO(){return calc_gas(CO);}
     float measure_NO2(){return calc_gas(NO2);}
     float measure_NH3(){return calc_gas(NH3);}
     
-    //float getR0(unsigned char ch);      // 0:CH3, 1:CO, 2:NO2
-    //float getRs(unsigned char ch);      // 0:CH3, 1:CO, 2:NO2
+    float get_R0(int gas);      
+    float get_Rs(int gas); 
 
     void led_on();    
     void led_off();
     
     void display_eeprom();
-    //void factory_setting();
+    void factory_setting();
     unsigned char get_version();
 };
 
