@@ -62,7 +62,6 @@ private:
     int __version;
     
 public:
-
     inline uint16_t get_addr_dta(uint8_t addrDev, uint8_t addrReg);
     inline uint16_t get_addr_dta(uint8_t addrDev, uint8_t addrReg, uint8_t addrDta);
     inline void write_i2c(uint8_t addrDev, uint8_t addrReg, uint8_t data);
@@ -70,7 +69,6 @@ public:
     float calc_gas(int gas);
     
 public:
-
     void power_on();
     void power_off();
     
@@ -85,6 +83,7 @@ public:
     void led_off();
     
     void display_eeprom();
+    void factory_setting(); // /!\ This function might be dangerous! 
     unsigned char get_version();
 };
 

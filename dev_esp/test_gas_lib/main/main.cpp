@@ -48,6 +48,7 @@ void power_test() {
 	groveGasSensor.power_off();
 }
 
+
 void grove_test() {
 
 	struct timeval tv;
@@ -60,7 +61,6 @@ void grove_test() {
 	cout << "    CO" << "\t" << "\t  NO2" << "\t" << "\t  NH3" << endl;
 	cout << " " << groveGasSensor.get_Rs(CO) << "        " << groveGasSensor.get_Rs(NO2) << "        " <<  groveGasSensor.get_Rs(NH3) << endl;
 	vTaskDelay(500/ portTICK_RATE_MS);
-	factory_setting_test();
 	led_test();
 	//power_test();
 	vTaskDelay(1000/ portTICK_RATE_MS);
