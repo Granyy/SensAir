@@ -20,7 +20,7 @@ uint16_t GroveGasSensor::get_addr_dta(uint8_t addrDev, uint8_t addrReg) {
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
 	if (ret != ESP_OK) {
-        	cout << "[ERROR" << hex << ret << dec << "] i2c write" << endl;
+        	cout << "[ERROR " << hex << ret << dec << "] i2c write" << endl;
     }
     vTaskDelay(30 / portTICK_RATE_MS);
     cmd = i2c_cmd_link_create();
@@ -31,7 +31,7 @@ uint16_t GroveGasSensor::get_addr_dta(uint8_t addrDev, uint8_t addrReg) {
 	i2c_master_stop(cmd);
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000/portTICK_PERIOD_MS);
 	if (ret != ESP_OK) {
-        	cout << "[ERROR" << hex << ret << dec << "] i2c read" << endl;
+        	cout << "[ERROR " << hex << ret << dec << "] i2c read" << endl;
     }
 	i2c_cmd_link_delete(cmd);
 	value = (byte1 << 8) + (byte2);
@@ -52,7 +52,7 @@ uint16_t GroveGasSensor::get_addr_dta(uint8_t addrDev, uint8_t addrReg, uint8_t 
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
 	if (ret != ESP_OK) {
-        	cout << "[ERROR" << hex << ret << dec << "] i2c write" << endl;
+        	cout << "[ERROR " << hex << ret << dec << "] i2c write" << endl;
     }
     vTaskDelay(30 / portTICK_RATE_MS);
     cmd = i2c_cmd_link_create();
@@ -63,7 +63,7 @@ uint16_t GroveGasSensor::get_addr_dta(uint8_t addrDev, uint8_t addrReg, uint8_t 
 	i2c_master_stop(cmd);
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000/portTICK_PERIOD_MS);
 	if (ret != ESP_OK) {
-        	cout << "[ERROR" << hex << ret << dec << "] i2c read" << endl;
+        	cout << "[ERROR " << hex << ret << dec << "] i2c read" << endl;
     }
 	i2c_cmd_link_delete(cmd);
 	value = (byte1 << 8) + (byte2);
@@ -81,7 +81,7 @@ void GroveGasSensor::write_i2c(uint8_t addrDev, uint8_t addrReg, uint8_t data) {
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
 	if (ret != ESP_OK) {
-        	cout << "[ERROR" << hex << ret << dec << "] i2c write" << endl;
+        	cout << "[ERROR " << hex << ret << dec << "] i2c write" << endl;
     }
 }
 
@@ -137,17 +137,17 @@ void GroveGasSensor::led_off() {
 
 void GroveGasSensor::display_eeprom()
 {   
-    cout << "ADDR_IS_SET = " << hex << get_addr_dta(CMD_READ_EEPROM, ADDR_IS_SET) << dec << endl;
-    cout << "ADDR_FACTORY_ADC_NH3 = " << hex << get_addr_dta(CMD_READ_EEPROM, ADDR_FACTORY_ADC_NH3) << dec << endl;
-    cout << "ADDR_FACTORY_ADC_CO = " << hex << get_addr_dta(CMD_READ_EEPROM, ADDR_FACTORY_ADC_CO) << dec << endl;
-    cout << "ADDR_FACTORY_ADC_NO2 = " << hex << get_addr_dta(CMD_READ_EEPROM, ADDR_FACTORY_ADC_NO2) << dec << endl;
-    cout << "ADDR_USER_ADC_HN3 = " << hex << get_addr_dta(CMD_READ_EEPROM, ADDR_USER_ADC_HN3) << dec << endl;
-    cout << "ADDR_USER_ADC_CO = " << hex << get_addr_dta(CMD_READ_EEPROM, ADDR_USER_ADC_CO) << dec << endl;
-    cout << "ADDR_USER_ADC_NO2 = " << hex << get_addr_dta(CMD_READ_EEPROM, ADDR_USER_ADC_NO2) << dec << endl;
-    cout << "ADDR_I2C_ADDRESS = " << hex << get_addr_dta(CMD_READ_EEPROM, ADDR_I2C_ADDRESS) << dec << endl;
+    cout << "ADDR_IS_SET = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_IS_SET) << endl;
+    cout << "ADDR_FACTORY_ADC_NH3 = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_FACTORY_ADC_NH3) << endl;
+    cout << "ADDR_FACTORY_ADC_CO = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_FACTORY_ADC_CO) << endl;
+    cout << "ADDR_FACTORY_ADC_NO2 = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_FACTORY_ADC_NO2) << endl;
+    cout << "ADDR_USER_ADC_HN3 = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_USER_ADC_HN3) << endl;
+    cout << "ADDR_USER_ADC_CO = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_USER_ADC_CO) << endl;
+    cout << "ADDR_USER_ADC_NO2 = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_USER_ADC_NO2)  << endl;
+    cout << "ADDR_I2C_ADDRESS = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_I2C_ADDRESS) << endl;
 }
 
-uint8_t GroveGasSensor::getVersion()
+uint8_t GroveGasSensor::get_version()
 {
     if(get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_IS_SET) == 1126) 
     {

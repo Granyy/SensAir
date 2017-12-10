@@ -101,7 +101,7 @@ public:
     
     void display_eeprom();
     //void factory_setting();
-    unsigned char getVersion();
+    unsigned char get_version();
 };
 
 extern GroveGasSensor gas;
