@@ -85,7 +85,6 @@ public:
     void led_off();
     
     void display_eeprom();
-    void factory_setting();
     unsigned char get_version();
 };
 

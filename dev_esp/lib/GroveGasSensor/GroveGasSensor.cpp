@@ -227,27 +227,6 @@ void GroveGasSensor::display_eeprom()
     cout << "ADDR_I2C_ADDRESS = " << get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_I2C_ADDRESS) << endl;
 }
 
-void GroveGasSensor::factory_setting()
-{
-    uint8_t tmp[7];
-
-    uint16_t a0 = get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_FACTORY_ADC_NH3);
-    uint16_t a1 = get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_FACTORY_ADC_CO);
-    uint16_t a2 = get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_FACTORY_ADC_NO2);
-    
-    tmp[0] = 7;
-    tmp[1] = a0>>8;
-    tmp[2] = a0&0xff;     
-    tmp[3] = a1>>8;
-    tmp[4] = a1&0xff;
-
-    tmp[5] = a2>>8;
-    tmp[6] = a2&0xff;   
-    vTaskDelay(100/ portTICK_RATE_MS);
-    write_i2c(DEFAULT_I2C_ADDR, tmp);
-    vTaskDelay(100/ portTICK_RATE_MS);
-}
-
 uint8_t GroveGasSensor::get_version()
 {
     if(get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_IS_SET) == 1126) 
