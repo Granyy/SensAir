@@ -1,0 +1,83 @@
+#include <esp_log.h>
+#include <iostream>
+#include "sdkconfig.h"
+#include <math.h>
+#include "driver/i2c.h"
+#include "GroveGasSensor.h"
+#include "linenoise/linenoise.h"
+#include <sys/time.h>
+#define SDA_PIN 22
+#define SCL_PIN 26
+
+
+using namespace std;
+
+extern "C" {
+   void app_main();
+}
+
+
+
+void I2C_config() {
+	i2c_config_t conf;
+	conf.mode = I2C_MODE_MASTER;
+	conf.sda_io_num = (gpio_num_t)SDA_PIN;
+	conf.scl_io_num = (gpio_num_t)SCL_PIN;
+	conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
+	conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+	conf.master.clk_speed = 100000;
+	i2c_param_config(I2C_NUM_0, &conf);
+	i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0);
+}
+
+
+void led_test(GroveGasSensor groveGasSensor) {
+	groveGasSensor.led_on();
+	vTaskDelay(500/ portTICK_RATE_MS);
+	groveGasSensor.led_off();
+	cout << "LED ON" << endl;
+	vTaskDelay(2000/ portTICK_RATE_MS);
+	groveGasSensor.led_on();
+	cout << "LED OFF" << endl;
+	vTaskDelay(2000/ portTICK_RATE_MS);
+}
+
+void power_test(GroveGasSensor groveGasSensor) {
+	groveGasSensor.power_on();
+	vTaskDelay(10000/ portTICK_RATE_MS);
+	groveGasSensor.power_off();
+}
+
+void grove_test() {
+
+	struct timeval tv;
+	GroveGasSensor groveGasSensor;
+	groveGasSensor.get_version();
+	groveGasSensor.display_eeprom();
+	vTaskDelay(500/ portTICK_RATE_MS);
+	led_test(groveGasSensor);
+	//power_test(groveGasSensor);
+	vTaskDelay(1000/ portTICK_RATE_MS);
+
+	int i = 15;
+	while (1) {
+		if (i == 15) {
+			linenoiseClearScreen();
+			i = 0;
+			gettimeofday(&tv, nullptr);
+			cout << "Time: " << tv.tv_sec << endl;
+			cout << "    CO" << "\t" << "\t  NO2" << "\t" << "\t  NH3" << endl;
+		}
+		cout << " " << groveGasSensor.measure_CO() << "        " << groveGasSensor.measure_NO2() << "        " <<  groveGasSensor.measure_NH3() << endl;
+		vTaskDelay(2000/ portTICK_RATE_MS);
+		i++;
+	}
+	
+
+}
+
+void app_main(void)
+{	
+	I2C_config();
+	grove_test();
+} // app_main
