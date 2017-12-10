@@ -16,7 +16,7 @@ extern "C" {
    void app_main();
 }
 
-
+GroveGasSensor groveGasSensor;
 
 void I2C_config() {
 	i2c_config_t conf;
@@ -31,7 +31,7 @@ void I2C_config() {
 }
 
 
-void led_test(GroveGasSensor groveGasSensor) {
+void led_test() {
 	groveGasSensor.led_on();
 	vTaskDelay(500/ portTICK_RATE_MS);
 	groveGasSensor.led_off();
@@ -42,7 +42,7 @@ void led_test(GroveGasSensor groveGasSensor) {
 	vTaskDelay(2000/ portTICK_RATE_MS);
 }
 
-void power_test(GroveGasSensor groveGasSensor) {
+void power_test() {
 	groveGasSensor.power_on();
 	vTaskDelay(10000/ portTICK_RATE_MS);
 	groveGasSensor.power_off();
@@ -51,13 +51,20 @@ void power_test(GroveGasSensor groveGasSensor) {
 void grove_test() {
 
 	struct timeval tv;
-	GroveGasSensor groveGasSensor;
 	groveGasSensor.get_version();
 	groveGasSensor.display_eeprom();
+	cout << "R0" << endl;
+	cout << "    CO" << "\t" << "\t  NO2" << "\t" << "\t  NH3" << endl;
+	cout << " " << groveGasSensor.get_R0(CO) << "        " << groveGasSensor.get_R0(NO2) << "        " <<  groveGasSensor.get_R0(NH3) << endl;
+	cout << "Rs" << endl;
+	cout << "    CO" << "\t" << "\t  NO2" << "\t" << "\t  NH3" << endl;
+	cout << " " << groveGasSensor.get_Rs(CO) << "        " << groveGasSensor.get_Rs(NO2) << "        " <<  groveGasSensor.get_Rs(NH3) << endl;
 	vTaskDelay(500/ portTICK_RATE_MS);
-	led_test(groveGasSensor);
-	//power_test(groveGasSensor);
+	factory_setting_test();
+	led_test();
+	//power_test();
 	vTaskDelay(1000/ portTICK_RATE_MS);
+	
 
 	int i = 15;
 	while (1) {
