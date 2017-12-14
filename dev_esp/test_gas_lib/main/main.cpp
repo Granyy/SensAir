@@ -4,6 +4,7 @@
 #include <math.h>
 #include "driver/i2c.h"
 #include "GroveGasSensor.h"
+#include "MicsGasSensor.h"
 #include "linenoise/linenoise.h"
 #include <sys/time.h>
 #define SDA_PIN 22
@@ -80,11 +81,27 @@ void grove_test() {
 		i++;
 	}
 	
+}
 
+void mics_test() {
+	MicsGasSensor micsGasSensor;
+	micsGasSensor.get_version();
+	cout << "year: " << micsGasSensor.year << endl;
+  	cout << "month: " << micsGasSensor.month << endl;
+   	cout << "day: " << micsGasSensor.day << endl;
+   	cout << "rev: " <<  micsGasSensor.rev << endl;
+   	cout <<  "crc: " << micsGasSensor.crc << endl;
+	while (1) {
+		micsGasSensor.read_sensor();
+		cout << "CO2: " << micsGasSensor.co2 << endl;
+		cout << "VOC: " << micsGasSensor.voc << endl;
+		vTaskDelay(2000/ portTICK_RATE_MS);
+	}
 }
 
 void app_main(void)
 {	
 	I2C_config();
-	grove_test();
+	mics_test();
+	//grove_test();
 } // app_main

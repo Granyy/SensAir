@@ -3,7 +3,7 @@
 /*      @VERSION : 1.0                                                        */
 /*     @CREATION : dec 10, 2017                                               */
 /* @MODIFICATION : dec 10, 2017                                               */
-/*       @AUTHOR : Leo GRANIER                                                 */
+/*       @AUTHOR : Leo GRANIER                                                */
 /******************************************************************************/
 
 #include "GroveGasSensor.h"

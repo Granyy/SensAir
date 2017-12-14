@@ -153,7 +153,7 @@ void I2C_demo() {
 	while (1) {
 		
 		value = I2C_read_2_bytes(ADDR_GROVE, CH_VALUE_CO);
-		value2 = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_FACTORY_ADC_CO);
+		value2 = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_USER_ADC_CO);
 		
 		ratio = (float)value/(float)value2*(1023.0-value2)/(1023.0-value);
 		cout << "ratio: " << ratio << endl;
@@ -162,7 +162,7 @@ void I2C_demo() {
 		vTaskDelay(2000/ portTICK_RATE_MS);
 		I2C_write(ADDR_GROVE,CMD_CONTROL_LED,0x00);
 		value = I2C_read_2_bytes(ADDR_GROVE, CH_VALUE_NO2);
-		value2 = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_FACTORY_ADC_NO2);
+		value2 = I2C_read_2_bytes_data(ADDR_GROVE, CMD_READ_EEPROM, ADDR_USER_ADC_NO2);
 		
 		ratio = (float)value/(float)value2*(1023.0-value2)/(1023.0-value);
 		cout << "Ratio: " << ratio << endl;
