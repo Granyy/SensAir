@@ -52,31 +52,32 @@ void MicsGasSensor::read_sensor() {
     read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, data);
     
     status = data[5];
-    
-    co2 = (data[1] - 13) * (1600.0 / 229) + 400;
-    voc = (data[0] - 13) * (1000.0/229);
+    cout << (int)data[1] << endl;
+	cout << (int)data[0] << endl;
+    co2 = ((int)data[1] - 13) * (1600.0 / 229) + 400;
+    voc = ((int)data[0] - 13) * (1000.0/229);
 
 }
 
 void MicsGasSensor::get_version() {
-    static uint8_t data[7];
+    uint8_t data[7];
     read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_DATE_CODE, data);
     
     year = data[0];
     month = data[1];
     day = data[2];
-    rev = data[3];
+    rev = (char)data[3];
     crc = data[6];
 }
 
 
-void MicsGasSensor::read_data(uint8_t addrDev, uint8_t addrReg, uint8_t data[]) {
+void MicsGasSensor::read_data(uint8_t addrDev, uint8_t addrReg, uint8_t* data) {
 	int ret;
 
 	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
 	i2c_master_start(cmd);
 	i2c_master_write_byte(cmd, (addrDev << 1) | I2C_MASTER_WRITE, ACK_VAL);
-	i2c_master_write_byte(cmd, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, ACK_VAL);
+	i2c_master_write_byte(cmd, (uint8_t)addrReg, ACK_VAL);
 	i2c_master_write_byte(cmd, 0x00, ACK_VAL);
 	i2c_master_write_byte(cmd, 0x00, ACK_VAL);
 	i2c_master_write_byte(cmd, 0x00, ACK_VAL);
