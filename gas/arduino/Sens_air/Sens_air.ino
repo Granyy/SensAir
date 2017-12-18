@@ -6,8 +6,9 @@
 MICS_VZ_89TE sensor;
 
 #define SENSOR_ADDR     0X04        // default to 0x04
-#define PRE_HEAT_TIME   0           // pre-heat time, 10-30 minutes is recommended
-#define TIMER 10  //temps entre chaque mesure en seconde
+#define PRE_HEAT_TIME   15        // pre-heat time, 10-30 minutes is recommended
+#define CALIBRATION   0           // 0 or 1 if you want a calibration
+#define TIMER 10                  //temps entre chaque mesure en seconde
 #define BAUD 9600
 
 void setup() {
@@ -37,6 +38,14 @@ void setup() {
         delay(1000);
         count++;
     }
+
+  if (CALIBRATION){
+
+    Serial.println("Begin to calibrate...");
+    gas.doCalibrate();
+    Serial.println("Calibration ok");
+    
+  }
 
     Serial.println("Ready for sending data");
     Serial.println("CO, NO2, CO2, VOC, TIME");
