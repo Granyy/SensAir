@@ -62,7 +62,7 @@ void MicsGasSensor::read_sensor() {
 void MicsGasSensor::get_version() {
     uint8_t data[7];
     read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_DATE_CODE, data);
-    
+    cout << (int)data[0] << "|" << (int)data[1] << "|" << (int)data[2] << "|" << (int)data[3] << "|" << (int)data[4] << "|" << (int)data[5] << "|" << (int)data[6] << endl;
     year = data[0];
     month = data[1];
     day = data[2];
@@ -97,11 +97,9 @@ void MicsGasSensor::read_data(uint8_t addrDev, uint8_t addrReg, uint8_t* data) {
     }
 	i2c_cmd_link_delete(cmd);
 	
-    vTaskDelay(100 / portTICK_RATE_MS);
+    vTaskDelay(120 / portTICK_RATE_MS);
 
     cmd = i2c_cmd_link_create();
-   	i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (addrDev << 1)| I2C_MASTER_READ, ACK_VAL);
 	i2c_master_read_byte(cmd, &data[0], ACK_VAL);
 	i2c_master_read_byte(cmd, &data[1], ACK_VAL);
 	i2c_master_read_byte(cmd, &data[2], ACK_VAL);
