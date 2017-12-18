@@ -52,8 +52,6 @@ void MicsGasSensor::read_sensor() {
     read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, data);
     
     status = data[5];
-    cout << (int)data[1] << endl;
-	cout << (int)data[0] << endl;
     co2 = ((int)data[1] - 13) * (1600.0 / 229) + 400;
     voc = ((int)data[0] - 13) * (1000.0/229);
 
@@ -62,7 +60,6 @@ void MicsGasSensor::read_sensor() {
 void MicsGasSensor::get_version() {
     uint8_t data[7];
     read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_DATE_CODE, data);
-    cout << (int)data[0] << "|" << (int)data[1] << "|" << (int)data[2] << "|" << (int)data[3] << "|" << (int)data[4] << "|" << (int)data[5] << "|" << (int)data[6] << endl;
     year = data[0];
     month = data[1];
     day = data[2];
