@@ -451,22 +451,18 @@ void MutichannelGasSensor::doCalibrate(void)
             Serial.print('\t');
             Serial.print(a2);
             Serial.println('\t');
-            Serial.println("While");
             ledOn();
             
             int cnt = 0;
             for(i=0; i<10; i++)
             {
-                if((a0 - get_addr_dta(CH_VALUE_NH3)) > 4 || (get_addr_dta(CH_VALUE_NH3) - a0) > 4)cnt++;
-                if((a1 - get_addr_dta(CH_VALUE_CO)) > 4 || (get_addr_dta(CH_VALUE_CO) - a1) > 4)cnt++;
-                if((a2 - get_addr_dta(CH_VALUE_NO2)) > 4 || (get_addr_dta(CH_VALUE_NO2) - a2) > 4)cnt++;
+                if((a0 - get_addr_dta(CH_VALUE_NH3)) > 2 || (get_addr_dta(CH_VALUE_NH3) - a0) > 2)cnt++;
+                if((a1 - get_addr_dta(CH_VALUE_CO)) > 2 || (get_addr_dta(CH_VALUE_CO) - a1) > 2)cnt++;
+                if((a2 - get_addr_dta(CH_VALUE_NO2)) > 2 || (get_addr_dta(CH_VALUE_NO2) - a2) > 2)cnt++;
                 
-                Serial.print("For");Serial.print(i);Serial.print("cnt");Serial.println(cnt);
-
                 if(cnt>5)
                 {
                     break;
-                    Serial.println("breakfor");
                 }
                 delay(1000);
             }
