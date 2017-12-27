@@ -24,3 +24,13 @@ void I2C_config() {
 	i2c_param_config(I2C_INTERFACE, &conf);
 	i2c_driver_install(I2C_INTERFACE, I2C_MODE_MASTER, 0, 0, 0);
 }
+
+
+void Timer_config() {
+	ledc_timer_config_t ledc_timer;
+	ledc_timer.bit_num = LEDC_TIMER_10_BIT,
+	ledc_timer.freq_hz = LEDRGB_FREQ,                      
+	ledc_timer.speed_mode = LEDRGB_MODE;
+	ledc_timer.timer_num = LEDRGB_TIMER;
+    ledc_timer_config(&ledc_timer);
+}
