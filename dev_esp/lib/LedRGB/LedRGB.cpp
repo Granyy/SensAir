@@ -51,11 +51,11 @@ void LedRGB::fade_up_down(int time_ms) {
 }
 
 void LedRGB::fade_up(int time_ms) {
-    ledc_set_fade_with_time(channelRed.speed_mode, channelRed.channel, (uint16_t)((float)(red/255)*brightness), time_ms);
+    ledc_set_fade_with_time(channelRed.speed_mode, channelRed.channel, (uint16_t)((red*brightness)/255), time_ms);
     ledc_fade_start(channelRed.speed_mode, channelRed.channel, LEDC_FADE_NO_WAIT);
-    ledc_set_fade_with_time(channelGreen.speed_mode, channelGreen.channel, (uint16_t)((float)(green/255)*brightness), time_ms);
+    ledc_set_fade_with_time(channelGreen.speed_mode, channelGreen.channel, (uint16_t)((green*brightness)/255), time_ms);
     ledc_fade_start(channelGreen.speed_mode, channelGreen.channel, LEDC_FADE_NO_WAIT);
-    ledc_set_fade_with_time(channelBlue.speed_mode, channelBlue.channel, (uint16_t)((float)(blue/255)*brightness), time_ms);
+    ledc_set_fade_with_time(channelBlue.speed_mode, channelBlue.channel, (uint16_t)((blue*brightness)/255), time_ms);
     ledc_fade_start(channelBlue.speed_mode, channelBlue.channel, LEDC_FADE_NO_WAIT);
 	vTaskDelay((time_ms+100) / portTICK_PERIOD_MS);
 
