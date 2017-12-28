@@ -20,11 +20,13 @@ void app_main()
     LedRGB ledRGB;
     
     while(1) {
-        ledRGB.change_color(1000, GREEN);
+        ledRGB.change_color(1000, 125, 255,0);
         vTaskDelay(3000 / portTICK_PERIOD_MS);
-        ledRGB.change_color(1000, RED);
+        ledRGB.change_color(1000, 255, 255,0);
         vTaskDelay(3000 / portTICK_PERIOD_MS);
-        ledRGB.change_color(1000, BLUE);
+        ledRGB.change_color(1000, 255, 125,0);
+        vTaskDelay(3000 / portTICK_PERIOD_MS);
+		ledRGB.change_color(1000, 255,0,0);
         vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
 
