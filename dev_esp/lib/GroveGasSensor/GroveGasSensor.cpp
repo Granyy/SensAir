@@ -21,6 +21,7 @@ uint16_t GroveGasSensor::get_addr_dta(uint8_t addrDev, uint8_t addrReg) {
     i2c_cmd_link_delete(cmd);
 	if (ret != ESP_OK) {
         	cout << "[ERROR " << hex << ret << dec << "] i2c write" << endl;
+        	return 0xFFFF;
     }
     vTaskDelay(30 / portTICK_RATE_MS);
     cmd = i2c_cmd_link_create();
@@ -32,6 +33,7 @@ uint16_t GroveGasSensor::get_addr_dta(uint8_t addrDev, uint8_t addrReg) {
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000/portTICK_PERIOD_MS);
 	if (ret != ESP_OK) {
         	cout << "[ERROR " << hex << ret << dec << "] i2c read" << endl;
+        	return 0xFFFF;
     }
 	i2c_cmd_link_delete(cmd);
 	value = (byte1 << 8) + (byte2);
@@ -53,6 +55,7 @@ uint16_t GroveGasSensor::get_addr_dta(uint8_t addrDev, uint8_t addrReg, uint8_t 
     i2c_cmd_link_delete(cmd);
 	if (ret != ESP_OK) {
         	cout << "[ERROR " << hex << ret << dec << "] i2c write" << endl;
+        	return 0xFFFF;
     }
     vTaskDelay(30 / portTICK_RATE_MS);
     cmd = i2c_cmd_link_create();
@@ -64,6 +67,7 @@ uint16_t GroveGasSensor::get_addr_dta(uint8_t addrDev, uint8_t addrReg, uint8_t 
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000/portTICK_PERIOD_MS);
 	if (ret != ESP_OK) {
         	cout << "[ERROR " << hex << ret << dec << "] i2c read" << endl;
+        	return 0xFFFF;
     }
 	i2c_cmd_link_delete(cmd);
 	value = (byte1 << 8) + (byte2);
@@ -113,24 +117,30 @@ float GroveGasSensor::calc_gas(int gas)
         {   
             int A0_1 = get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_USER_ADC_CO);
             int An_1 = get_addr_dta(DEFAULT_I2C_ADDR, CH_VALUE_CO);
-            float ratio1 = (float)An_1/(float)A0_1*(1023.0-A0_1)/(1023.0-An_1);
-            c = pow(ratio1, -1.179)*4.385;
+            if ((A0_1!=0xFFFF)&(An_1!=0xFFFF)) {
+				float ratio1 = (float)An_1/(float)A0_1*(1023.0-A0_1)/(1023.0-An_1);
+				c = pow(ratio1, -1.179)*4.385;
+            } else c=-1;
             break;
         }
         case NO2:
         {   
             int A0_2 = get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_USER_ADC_NO2);
             int An_2 = get_addr_dta(DEFAULT_I2C_ADDR, CH_VALUE_NO2);
-            float ratio2 = (float)An_2/(float)A0_2*(1023.0-A0_2)/(1023.0-An_2);
-            c = pow(ratio2, 1.007)/6.855; 
+            if ((A0_2!=0xFFFF)&(An_2!=0xFFFF)) {
+            	float ratio2 = (float)An_2/(float)A0_2*(1023.0-A0_2)/(1023.0-An_2);
+            	c = pow(ratio2, 1.007)/6.855;
+            } else c=-1;
             break;
         }
         case NH3:
         {
-            int A0_0 = get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_USER_ADC_HN3);
-            int An_0 = get_addr_dta(DEFAULT_I2C_ADDR, CH_VALUE_NH3);
-            float ratio0 = (float)An_0/(float)A0_0*(1023.0-A0_0)/(1023.0-An_0);
-            c = pow(ratio0, -1.67)/1.47;
+            int A0_3 = get_addr_dta(DEFAULT_I2C_ADDR, CMD_READ_EEPROM, ADDR_USER_ADC_HN3);
+            int An_3 = get_addr_dta(DEFAULT_I2C_ADDR, CH_VALUE_NH3);
+            if ((A0_3!=0xFFFF)&(An_3!=0xFFFF)) {
+            	float ratio0 = (float)An_3/(float)A0_3*(1023.0-A0_3)/(1023.0-An_3);
+            	c = pow(ratio0, -1.67)/1.47;
+            } else c=-1;
             break;
         }
         default:
