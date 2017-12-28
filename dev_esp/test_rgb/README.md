@@ -1,5 +1,3 @@
-# Blink Example
+# RGB Example
 
-Starts a FreeRTOS task to blink an LED
-
-See the README.md file in the upper level 'examples' directory for more information about examples.
+Create a LedRGB object and fade up and down with red, green, blue colors.
