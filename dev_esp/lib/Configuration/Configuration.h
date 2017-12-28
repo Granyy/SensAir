@@ -30,7 +30,6 @@
 #define LEDR_CHANNEL    LEDC_CHANNEL_0
 #define LEDG_CHANNEL    LEDC_CHANNEL_1
 #define LEDB_CHANNEL    LEDC_CHANNEL_2
-#define LEDC_TEST_DUTY  (1000)
 
 void configure();
 
