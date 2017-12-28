@@ -21,14 +21,18 @@
 #include <sstream>
 #include "sdkconfig.h"
 #include <iostream>
+#include "cJSON.h"
 
 using namespace std;
 
 class MyCallbackHandler: public BLECharacteristicCallbacks {
 public:
-    MyCallbackHandler(struct gas& gasVal) : m_gasVal(gasVal) {}
+    MyCallbackHandler(GasValue& gasVal) : m_gasVal(gasVal) {}
+    MyCallbackHandler();
 private:
-    struct gas& m_gasVal;
+    GasValue& m_gasVal;
+    struct gas gasValue;
+    struct gasRaw gasRawValue;
 	void onRead(BLECharacteristic *pCharacteristic);
     void onWrite(BLECharacteristic *pCharacteristic);
 };

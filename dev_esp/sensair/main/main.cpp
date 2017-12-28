@@ -25,24 +25,18 @@ extern "C" {
 }
 
 
-SemaphoreHandle_t gasSemaphore = NULL;
 SemaphoreHandle_t isrSemaphore = NULL;
 int cnt = 0; //A PROTEGER AVEC SEMAPHORE
-struct gasRaw gasRawValue;
-struct gas gasValue;
+
+GasValue gasValueTEST;
 
 void gas_task(void* arg) {
 	GasTreatment gasTreatment;
 	gasTreatment.begin();
 	while (1) {
 		gasTreatment.treat_gas();
-		if(xSemaphoreTake(gasSemaphore,portMAX_DELAY) == pdTRUE) {
-			cout << "Remplissage de gasValue" << endl;
-			gasRawValue = gasTreatment.get_gasRawValue();
-			gasValue = gasTreatment.get_gasValue();
-			xSemaphoreGive(gasSemaphore);
-			cout << "Semaphore given gas_task" << endl;
-		}
+		gasValueTEST.set_gasValue(gasTreatment.get_gasValue());
+		gasValueTEST.set_gasRawValue(gasTreatment.get_gasRawValue());
 		vTaskDelay(10000/portTICK_RATE_MS);
 	}
 }
@@ -60,10 +54,7 @@ void stand_alone_task (void* arg) {
 	struct gas _gasValue;
 	 for(;;) {
 	    if(xSemaphoreTake(isrSemaphore,portMAX_DELAY) == pdTRUE) {
-			if(xSemaphoreTake(gasSemaphore,portMAX_DELAY) == pdTRUE) {
-				_gasValue = gasValue;
-				xSemaphoreGive(gasSemaphore);
-			}
+	    	_gasValue = gasValueTEST.get_gasValue();
 			ledRGB.change_color(500,BLUE);
 			ledRGB.change_color(500,SKY);
 			ledRGB.change_color(500,PURPLE);
@@ -84,16 +75,14 @@ void stand_alone_task (void* arg) {
 void run_server(void) {
 	MainBLEServer* pMainBleServer = new MainBLEServer();
 	pMainBleServer->setStackSize(20000);
-	pMainBleServer->start(static_cast<void*>(&gasValue));
+	pMainBleServer->start(static_cast<void*>(&gasValueTEST));
 
 }
 
 
 void app_main(void)
 {
-	gasSemaphore = xSemaphoreCreateBinary();
 	isrSemaphore = xSemaphoreCreateBinary();
-	xSemaphoreGive(gasSemaphore);
 	configure();
     gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
 

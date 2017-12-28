@@ -8,6 +8,54 @@
 
 #include "GasTreatment.h"
 
+
+	GasValue::GasValue() {
+		gasSemaphore = xSemaphoreCreateBinary();
+		xSemaphoreGive(gasSemaphore);
+		gasValue.CO = 0;
+		gasValue.CO2 = 0;
+		gasValue.NO2 = 0;
+		gasValue.VOC = 0;
+		gasRawValue.CO = 0;
+		gasRawValue.CO2 = 0;
+		gasRawValue.NO2 = 0;
+		gasRawValue.VOC = 0;
+	}
+
+	struct gasRaw GasValue::get_gasRawValue() {
+		struct gasRaw _gasRawValue;
+		if(xSemaphoreTake(gasSemaphore,portMAX_DELAY) == pdTRUE) {
+			_gasRawValue = gasRawValue;
+			xSemaphoreGive(gasSemaphore);
+		}
+		return _gasRawValue;
+
+	}
+
+	struct gas GasValue::get_gasValue() {
+		struct gas _gasValue;
+		if(xSemaphoreTake(gasSemaphore,portMAX_DELAY) == pdTRUE) {
+			_gasValue = gasValue;
+			xSemaphoreGive(gasSemaphore);
+		}
+		return _gasValue;
+	}
+	void GasValue::set_gasValue(struct gas _gasValue) {
+		if(xSemaphoreTake(gasSemaphore,portMAX_DELAY) == pdTRUE) {
+			gasValue = _gasValue;
+			xSemaphoreGive(gasSemaphore);
+		}
+	}
+	void GasValue::set_gasRawValue(struct gasRaw _gasRawValue) {
+		if(xSemaphoreTake(gasSemaphore,portMAX_DELAY) == pdTRUE) {
+			gasRawValue = _gasRawValue;
+			xSemaphoreGive(gasSemaphore);
+		}
+
+	}
+
+
+
 void GasTreatment::begin() {
 	groveGasSensor.power_on();
 }
@@ -31,10 +79,10 @@ void GasTreatment::treat_gas() {
 	gasValue.CO2=map_gas(CO2, 400, 500, 0, 100);
 	gasValue.NO2=map_gas(NO2,0.10,0.20,0,100);
 	gasValue.VOC=map_gas(VOC,0,1000,0,100);
-	cout << "CO: " << (int)gasValue.CO << endl;
-	cout << "CO2: " << (int)gasValue.CO2 << endl;
-	cout << "NO2: " << (int)gasValue.NO2 << endl;
-	cout << "VOC: " << (int)gasValue.VOC << endl;
+	cout << "CO: "  << (int)gasValue.CO  << " | " << gasRawValue.CO  << endl;
+	cout << "CO2: " << (int)gasValue.CO2 << " | " << gasRawValue.CO2 << endl;
+	cout << "NO2: " << (int)gasValue.NO2 << " | " << gasRawValue.NO2 << endl;
+	cout << "VOC: " << (int)gasValue.VOC << " | " << gasRawValue.VOC << endl;
 }
 
 struct gas GasTreatment::get_gasValue() {

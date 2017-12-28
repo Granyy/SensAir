@@ -39,6 +39,20 @@ struct gasRaw {
     float NO2;
 };
 
+class GasValue {
+private:
+	struct gasRaw gasRawValue;
+	struct gas gasValue;
+	SemaphoreHandle_t gasSemaphore = NULL;
+public:
+	GasValue();
+	struct gasRaw get_gasRawValue();
+	struct gas get_gasValue();
+	void set_gasValue(struct gas _gasValue);
+	void set_gasRawValue(struct gasRaw _gasRawValue);
+
+};
+
 class GasTreatment {
 	private :
 		GroveGasSensor groveGasSensor;

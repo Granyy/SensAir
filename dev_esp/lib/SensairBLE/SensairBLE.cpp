@@ -12,14 +12,17 @@ void MyCallbackHandler::onRead(BLECharacteristic *pCharacteristic) {
 	cout << "*********" << endl;
 	cout << "   READ  " << endl;
 	cout << "*********" << endl;
-	cout << (float)m_gasVal.CO << endl;
-	ostringstream co;
-	co << "CO: " << (float)m_gasVal.CO;
-	struct timeval tv;
-	gettimeofday(&tv, nullptr);
-	std::ostringstream os;
-	os << "Time: " << tv.tv_sec;
-	pCharacteristic->setValue(co.str());
+	gasValue = m_gasVal.get_gasValue();
+	cJSON *gasJSON;
+	gasJSON = cJSON_CreateObject();
+	cJSON_AddNumberToObject(gasJSON, "CO",(float)gasValue.CO);
+	cJSON_AddNumberToObject(gasJSON, "CO2",(float)gasValue.CO2);
+	cJSON_AddNumberToObject(gasJSON, "NO2",(float)gasValue.NO2);
+	cJSON_AddNumberToObject(gasJSON, "VOC",(float)gasValue.VOC);
+	string gasStr(cJSON_Print(gasJSON));
+	cJSON_Delete(gasJSON);
+	cout << gasStr << endl;
+	pCharacteristic->setValue(gasStr);
 }
 
 void MyCallbackHandler::onWrite(BLECharacteristic *pCharacteristic) {
@@ -44,7 +47,7 @@ void MainBLEServer::run(void *data) {
 	);
 
 	
-    struct gas* gasPtr = static_cast<struct gas*>(data);
+	GasValue* gasPtr = static_cast<GasValue*>(data);
 	pCharacteristic->setCallbacks(new MyCallbackHandler(*gasPtr));
 	pCharacteristic->setValue("READ");
 
