@@ -58,7 +58,7 @@ public:
 private:
     
     uint8_t   _i2caddr;
-    void read_data(uint8_t addrDev, uint8_t addrReg, uint8_t data[]);
+    int read_data(uint8_t addrDev, uint8_t addrReg, uint8_t data[]);
 
 };
 

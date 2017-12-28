@@ -49,26 +49,37 @@ float MicsGasSensor::get_status() {
 
 void MicsGasSensor::read_sensor() {
     static uint8_t data[7];
-    read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, data);
-    
-    status = data[5];
-    co2 = ((int)data[1] - 13) * (1600.0 / 229) + 400;
-    voc = ((int)data[0] - 13) * (1000.0/229);
+    if (!(read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, data))) {
+    	status = data[5];
+    	co2 = ((int)data[1] - 13) * (1600.0 / 229) + 400;
+    	voc = ((int)data[0] - 13) * (1000.0/229);
+    } else {
+    	co2 = -1;
+    	voc = -1;
+    }
 
 }
 
 void MicsGasSensor::get_version() {
     uint8_t data[7];
-    read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_DATE_CODE, data);
-    year = data[0];
-    month = data[1];
-    day = data[2];
-    rev = (char)data[3];
-    crc = data[6];
+    if (!(read_data(MICS_VZ_89TE_ADDR, MICS_VZ_89TE_ADDR_CMD_GETSTATUS, data))) {
+		year = data[0];
+		month = data[1];
+		day = data[2];
+		rev = (char)data[3];
+		crc = data[6];
+    } else {
+		year = -1;
+		month = -1;
+		day = -1;
+		rev = -1;
+		crc = -1;
+    }
+
 }
 
 
-void MicsGasSensor::read_data(uint8_t addrDev, uint8_t addrReg, uint8_t* data) {
+int MicsGasSensor::read_data(uint8_t addrDev, uint8_t addrReg, uint8_t* data) {
 	int ret;
 
 	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
@@ -84,6 +95,7 @@ void MicsGasSensor::read_data(uint8_t addrDev, uint8_t addrReg, uint8_t* data) {
     i2c_cmd_link_delete(cmd);
 	if (ret != ESP_OK) {
         	cout << "[ERROR " << hex << ret << dec << "] i2c write" << endl;
+        	return -1;
     }
 	cmd = i2c_cmd_link_create();
 	i2c_master_start(cmd);
@@ -91,6 +103,7 @@ void MicsGasSensor::read_data(uint8_t addrDev, uint8_t addrReg, uint8_t* data) {
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000 / portTICK_RATE_MS);
     if (ret != ESP_OK) {
         	cout << "[ERROR " << hex << ret << dec << "] i2c write" << endl;
+        	return -1;
     }
 	i2c_cmd_link_delete(cmd);
 	
@@ -108,8 +121,10 @@ void MicsGasSensor::read_data(uint8_t addrDev, uint8_t addrReg, uint8_t* data) {
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, 1000/portTICK_PERIOD_MS);
 	if (ret != ESP_OK) {
         	cout << "[ERROR " << hex << ret << dec << "] i2c read" << endl;
+        	return -1;
     }
 	i2c_cmd_link_delete(cmd);
+	return 0;
 }
 
 MicsGasSensor mics;
