@@ -20,7 +20,7 @@ void change_color_from_average(uint8_t gasAverage, LedRGB ledRGB) {
 			if (gasAverage<GREEN_TH) ledRGB.change_color(500,0,255,0);
 			else if (gasAverage<YELLOW_TH) ledRGB.change_color(500, (int)((gasAverage-GREEN_TH)*255)/(YELLOW_TH-GREEN_TH), 255, 0);
 			else if (gasAverage<RED_TH) ledRGB.change_color(500, 255, (int)((RED_TH - gasAverage)*255)/(RED_TH - YELLOW_TH), 0);
-			else ledRGB.change_color(1000, 255,0,0);
+			else ledRGB.change_color(500, 255,0,0);
 }
 
 void display_color(struct gas _gasValue, LedRGB ledRGB) {
