@@ -28,7 +28,7 @@ using namespace std;
 class MyCallbackHandler: public BLECharacteristicCallbacks {
 public:
     MyCallbackHandler(GasValue& gasVal) : m_gasVal(gasVal) {}
-    MyCallbackHandler();
+    //MyCallbackHandler(){};
 private:
     GasValue& m_gasVal;
     struct gas gasValue;
