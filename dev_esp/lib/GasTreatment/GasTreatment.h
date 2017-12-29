@@ -15,6 +15,7 @@
 #include <iostream>
 #include "GroveGasSensor.h"
 #include "MicsGasSensor.h"
+#include "GasValue.h"
 
 #define map_gas(x, in_min, in_max, out_min, out_max) ((x) - (in_min)) * ((out_max) - (out_min)) / ((in_max) - (in_min)) + (out_min)
 #define GREEN_TH 20
@@ -24,34 +25,6 @@
 
 using namespace std;
 
-
-struct gas {
-    uint8_t CO;
-    uint8_t CO2;
-    uint8_t VOC;
-    uint8_t NO2;
-};
-
-struct gasRaw {
-    float CO;
-    float CO2;
-    float VOC;
-    float NO2;
-};
-
-class GasValue {
-private:
-	struct gasRaw gasRawValue;
-	struct gas gasValue;
-	SemaphoreHandle_t gasSemaphore = NULL;
-public:
-	GasValue();
-	struct gasRaw get_gasRawValue();
-	struct gas get_gasValue();
-	void set_gasValue(struct gas _gasValue);
-	void set_gasRawValue(struct gasRaw _gasRawValue);
-
-};
 
 class GasTreatment {
 	private :
