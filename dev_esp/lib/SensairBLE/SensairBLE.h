@@ -13,50 +13,40 @@
 #include "BLEDevice.h"
 #include "BLEServer.h"
 #include "BLEUtils.h"
-#include "GasTreatment.h"
-#include <esp_log.h>
+#include "GasValue.h"
 #include <string>
 #include <Task.h>
 #include <sys/time.h>
 #include <sstream>
-#include "sdkconfig.h"
 #include <iostream>
 #include "cJSON.h"
 
 using namespace std;
 
-class MyCallbackHandler: public BLECharacteristicCallbacks {
+class CallbackValue: public BLECharacteristicCallbacks {
 public:
-    MyCallbackHandler(GasValue& gasVal) : m_gasVal(gasVal) {}
-    //MyCallbackHandler(){};
+	CallbackValue(GasValue& gasVal) : m_gasVal(gasVal) {}
 private:
     GasValue& m_gasVal;
     struct gas gasValue;
+	void onRead(BLECharacteristic *pCharacteristic);
+    void onWrite(BLECharacteristic *pCharacteristic);
+};
+
+class CallbackRawValue: public BLECharacteristicCallbacks {
+public:
+    CallbackRawValue(GasValue& gasVal) : m_gasVal(gasVal) {}
+private:
+    GasValue& m_gasVal;
     struct gasRaw gasRawValue;
 	void onRead(BLECharacteristic *pCharacteristic);
     void onWrite(BLECharacteristic *pCharacteristic);
 };
 
-class MyCallbackHandler2: public BLECharacteristicCallbacks {
-	void onRead(BLECharacteristic *pCharacteristic) {
-        cout << "*********" << endl;
-        cout << "   READ  " << endl;
-        cout << "*********" << endl;
-		struct timeval tv;
-		gettimeofday(&tv, nullptr);
-		std::ostringstream os;
-		os << "Time: " << tv.tv_sec;
-		pCharacteristic->setValue(os.str());
-	}
-
-    void onWrite(BLECharacteristic *pCharacteristic) {
-    std::string value = pCharacteristic->getValue();
-    if (value.length() > 0) {
-            cout << "*********" << endl;
-            cout << "WRITE " << value << endl;
-            cout << "*********" << endl;
-        }
-    }
+class CallbackWrite: public BLECharacteristicCallbacks {
+	private :
+		void onRead(BLECharacteristic *pCharacteristic);
+		void onWrite(BLECharacteristic *pCharacteristic);
 };
 
 

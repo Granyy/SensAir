@@ -8,7 +8,7 @@
 
 #include "SensairBLE.h"
 
-void MyCallbackHandler::onRead(BLECharacteristic *pCharacteristic) {
+void CallbackValue::onRead(BLECharacteristic *pCharacteristic) {
 	cout << "*********" << endl;
 	cout << "   READ  " << endl;
 	cout << "*********" << endl;
@@ -21,53 +21,108 @@ void MyCallbackHandler::onRead(BLECharacteristic *pCharacteristic) {
 	cJSON_AddNumberToObject(gasJSON, "VOC",(float)gasValue.VOC);
 	string gasStr(cJSON_Print(gasJSON));
 	cJSON_Delete(gasJSON);
-	cout << gasStr << endl;
 	pCharacteristic->setValue(gasStr);
 }
 
-void MyCallbackHandler::onWrite(BLECharacteristic *pCharacteristic) {
+
+void CallbackRawValue::onRead(BLECharacteristic *pCharacteristic) {
+	cout << "**********" << endl;
+	cout << " READ RAW " << endl;
+	cout << "**********" << endl;
+	gasRawValue = m_gasVal.get_gasRawValue();
+	cJSON *gasJSON;
+	gasJSON = cJSON_CreateObject();
+	cJSON_AddNumberToObject(gasJSON, "CO",(float)gasRawValue.CO);
+	cJSON_AddNumberToObject(gasJSON, "CO2",(float)gasRawValue.CO2);
+	cJSON_AddNumberToObject(gasJSON, "NO2",(float)gasRawValue.NO2);
+	cJSON_AddNumberToObject(gasJSON, "VOC",(float)gasRawValue.VOC);
+	string gasStr(cJSON_Print(gasJSON));
+	cJSON_Delete(gasJSON);
+	pCharacteristic->setValue(gasStr);
+}
+
+
+void CallbackRawValue::onWrite(BLECharacteristic *pCharacteristic) {
 std::string value = pCharacteristic->getValue();
 if (value.length() > 0) {
-		cout << "*********" << endl;
-		cout << "WRITE " << value << endl;
-		cout << "*********" << endl;
-	}
+        cout << "*********" << endl;
+        cout << "WRITE " << value << endl;
+        cout << "*********" << endl;
+    }
 }
+
+void CallbackValue::onWrite(BLECharacteristic *pCharacteristic) {
+std::string value = pCharacteristic->getValue();
+if (value.length() > 0) {
+        cout << "*********" << endl;
+        cout << "WRITE " << value << endl;
+        cout << "*********" << endl;
+    }
+}
+
+
+void CallbackWrite::onRead(BLECharacteristic *pCharacteristic) {
+    cout << "*********" << endl;
+    cout << "   READ  " << endl;
+    cout << "*********" << endl;
+	struct timeval tv;
+	gettimeofday(&tv, nullptr);
+	std::ostringstream os;
+	os << "Time: " << tv.tv_sec;
+	pCharacteristic->setValue(os.str());
+}
+
+void CallbackWrite::onWrite(BLECharacteristic *pCharacteristic) {
+std::string value = pCharacteristic->getValue();
+if (value.length() > 0) {
+        cout << "*********" << endl;
+        cout << "WRITE " << value << endl;
+        cout << "*********" << endl;
+    }
+}
+
 
 void MainBLEServer::run(void *data) {
 
 	BLEDevice::init("SENSAIR");
 	BLEServer* pServer = BLEDevice::createServer();
 
-	BLEService* pService = pServer->createService("91bad492-b950-4226-aa2b-4ede9fa42f59");
+	GasValue* gasPtr = static_cast<GasValue*>(data);
 
-	BLECharacteristic* pCharacteristic = pService->createCharacteristic(
+	BLEService* pServiceValue = pServer->createService("91bad492-b950-4226-aa2b-4ede9fa42f59");
+	BLECharacteristic* pCharacteristicValue = pServiceValue->createCharacteristic(
 		BLEUUID("0d563a58-196a-48ce-ace2-dfec78acc814"),
 		BLECharacteristic::PROPERTY_READ
 	);
+	pCharacteristicValue->setCallbacks(new CallbackValue(*gasPtr));
+	pCharacteristicValue->setValue("READ");
+	pServiceValue->start();
 
-	
-	GasValue* gasPtr = static_cast<GasValue*>(data);
-	pCharacteristic->setCallbacks(new MyCallbackHandler(*gasPtr));
-	pCharacteristic->setValue("READ");
+	BLEService* pServiceRaw= pServer->createService("333b716c-1c49-48ea-8a16-6083ea1d4810");
+	BLECharacteristic* pCharacteristicRaw = pServiceRaw->createCharacteristic(
+		BLEUUID("01bf2093-f2d3-4fcc-8d2b-eda1667d96f4"),
+		BLECharacteristic::PROPERTY_READ
+	);
+	pCharacteristicRaw->setCallbacks(new CallbackRawValue(*gasPtr));
+	pCharacteristicRaw->setValue("READ_RAW");
+	pServiceRaw->start();
 
-	pService->start();
 
-	BLEService* myService = pServer->createService("3978601c-634d-41c1-a33f-dbdd92b68dbf");
 
-	BLECharacteristic* myCharacteristic = myService->createCharacteristic(
+	BLEService* pServiceWrite = pServer->createService("3978601c-634d-41c1-a33f-dbdd92b68dbf");
+	BLECharacteristic* pCharacteristicWrite = pServiceWrite->createCharacteristic(
 		BLEUUID("16ce95bb-8ce1-48ff-8043-680cb323324d"),
 		BLECharacteristic::PROPERTY_WRITE
 	);
+	pCharacteristicWrite->setCallbacks(new CallbackWrite());
+	pCharacteristicWrite->setValue("WRITE");
+	pServiceWrite->start();
 
-	myCharacteristic->setCallbacks(new MyCallbackHandler2());
-	myCharacteristic->setValue("WRITE");
-
-	myService->start();
 
 	BLEAdvertising* pAdvertising = pServer->getAdvertising();
-	pAdvertising->addServiceUUID(BLEUUID(pService->getUUID()));
-	pAdvertising->addServiceUUID(BLEUUID(myService->getUUID()));
+	pAdvertising->addServiceUUID(BLEUUID(pServiceValue->getUUID()));
+	pAdvertising->addServiceUUID(BLEUUID(pServiceRaw->getUUID()));
+	pAdvertising->addServiceUUID(BLEUUID(pServiceWrite->getUUID()));
 	pAdvertising->start();
 	delay(1000000);
 }
