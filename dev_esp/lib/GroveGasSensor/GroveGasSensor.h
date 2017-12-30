@@ -50,8 +50,8 @@ using namespace std;
 #define CMD_CONTROL_LED         10
 #define CMD_CONTROL_PWR         11
 
-#define ACK_VAL                 0x0
-#define NACK_VAL                0x1  
+#define ACK_VAL                 I2C_MASTER_ACK
+#define NACK_VAL                I2C_MASTER_NACK
 
 enum{CO, NO2, NH3};
 

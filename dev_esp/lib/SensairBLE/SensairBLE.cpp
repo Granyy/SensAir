@@ -9,9 +9,7 @@
 #include "SensairBLE.h"
 
 void CallbackValue::onRead(BLECharacteristic *pCharacteristic) {
-	cout << "*********" << endl;
-	cout << "   READ  " << endl;
-	cout << "*********" << endl;
+	cout << "********** READ VALUE " << endl;
 	gasValue = m_gasVal.get_gasValue();
 	cJSON *gasJSON;
 	gasJSON = cJSON_CreateObject();
@@ -26,9 +24,7 @@ void CallbackValue::onRead(BLECharacteristic *pCharacteristic) {
 
 
 void CallbackRawValue::onRead(BLECharacteristic *pCharacteristic) {
-	cout << "**********" << endl;
-	cout << " READ RAW " << endl;
-	cout << "**********" << endl;
+	cout << "********** READ RAW " << endl;
 	gasRawValue = m_gasVal.get_gasRawValue();
 	cJSON *gasJSON;
 	gasJSON = cJSON_CreateObject();
@@ -62,9 +58,7 @@ if (value.length() > 0) {
 
 
 void CallbackWrite::onRead(BLECharacteristic *pCharacteristic) {
-    cout << "*********" << endl;
-    cout << "   READ  " << endl;
-    cout << "*********" << endl;
+	cout << "********** READ TIME " << endl;
 	struct timeval tv;
 	gettimeofday(&tv, nullptr);
 	std::ostringstream os;
@@ -90,23 +84,21 @@ void MainBLEServer::run(void *data) {
 	GasValue* gasPtr = static_cast<GasValue*>(data);
 
 	BLEService* pServiceValue = pServer->createService("91bad492-b950-4226-aa2b-4ede9fa42f59");
+
 	BLECharacteristic* pCharacteristicValue = pServiceValue->createCharacteristic(
 		BLEUUID("0d563a58-196a-48ce-ace2-dfec78acc814"),
 		BLECharacteristic::PROPERTY_READ
 	);
 	pCharacteristicValue->setCallbacks(new CallbackValue(*gasPtr));
 	pCharacteristicValue->setValue("READ");
-	pServiceValue->start();
 
-	BLEService* pServiceRaw= pServer->createService("333b716c-1c49-48ea-8a16-6083ea1d4810");
-	BLECharacteristic* pCharacteristicRaw = pServiceRaw->createCharacteristic(
+	BLECharacteristic* pCharacteristicRaw = pServiceValue->createCharacteristic(
 		BLEUUID("01bf2093-f2d3-4fcc-8d2b-eda1667d96f4"),
 		BLECharacteristic::PROPERTY_READ
 	);
 	pCharacteristicRaw->setCallbacks(new CallbackRawValue(*gasPtr));
 	pCharacteristicRaw->setValue("READ_RAW");
-	pServiceRaw->start();
-
+	pServiceValue->start();
 
 
 	BLEService* pServiceWrite = pServer->createService("3978601c-634d-41c1-a33f-dbdd92b68dbf");
@@ -121,7 +113,6 @@ void MainBLEServer::run(void *data) {
 
 	BLEAdvertising* pAdvertising = pServer->getAdvertising();
 	pAdvertising->addServiceUUID(BLEUUID(pServiceValue->getUUID()));
-	pAdvertising->addServiceUUID(BLEUUID(pServiceRaw->getUUID()));
 	pAdvertising->addServiceUUID(BLEUUID(pServiceWrite->getUUID()));
 	pAdvertising->start();
 	delay(1000000);

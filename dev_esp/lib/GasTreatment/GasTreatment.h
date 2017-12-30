@@ -18,9 +18,6 @@
 #include "GasValue.h"
 
 #define map_gas(x, in_min, in_max, out_min, out_max) ((x) - (in_min)) * ((out_max) - (out_min)) / ((in_max) - (in_min)) + (out_min)
-#define GREEN_TH 20
-#define YELLOW_TH 50
-#define RED_TH 80
 
 
 using namespace std;

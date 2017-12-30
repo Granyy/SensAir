@@ -22,8 +22,8 @@
 #define MICS_VZ_89TE_ADDR_CMD_GETSTATUS	   0x0C
 #define MICS_VZ_89TE_DATE_CODE             0x0D
 
-#define ACK_VAL                 0x0
-#define NACK_VAL                0x1  
+#define ACK_VAL                 I2C_MASTER_ACK
+#define NACK_VAL                I2C_MASTER_NACK
 
 using namespace std;
 
