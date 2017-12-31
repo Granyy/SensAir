@@ -51,7 +51,7 @@ void IRAM_ATTR gpio_isr_handler(void* arg) {
 
 void stand_alone_task (void* arg) {
 	LedRGB ledRGB;
-	struct gas _gasValue;
+	struct gas _gasValue = {0,0,0,0};
 	 for(;;) {
 	    if(xSemaphoreTake(isrSemaphore,portMAX_DELAY) == pdTRUE) {
 	    	_gasValue = gasValue.get_gasValue();
@@ -75,7 +75,7 @@ void app_main(void)
 	configure();
 	isrSemaphore = xSemaphoreCreateBinary();
     gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
-	xTaskCreate(&gas_task, "gas_task", 2048, NULL, 5, NULL);
-	xTaskCreate(&stand_alone_task, "stand_alone_task", 2048, NULL, 5, NULL);
+	xTaskCreate(&gas_task, "gas_task", 4096, NULL, 5, NULL);
+	xTaskCreate(&stand_alone_task, "stand_alone_task", 4096, NULL, 5, NULL);
 	run_server();
 }

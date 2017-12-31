@@ -31,8 +31,8 @@ class GasTreatment {
 		float CO2 = -1;
 		float VOC = -1;
 		float NO2 = -1;
-		struct gas gasValue;
-		struct gasRaw gasRawValue;
+		struct gas gasValue = {0,0,0,0};
+		struct gasRaw gasRawValue = {0,0,0,0};
 
 	public :
 		void begin();

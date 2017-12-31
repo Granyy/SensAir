@@ -13,14 +13,8 @@
 GasValue::GasValue() {
 	gasSemaphore = xSemaphoreCreateBinary();
 	xSemaphoreGive(gasSemaphore);
-	gasValue.CO = 0;
-	gasValue.CO2 = 0;
-	gasValue.NO2 = 0;
-	gasValue.VOC = 0;
-	gasRawValue.CO = 0;
-	gasRawValue.CO2 = 0;
-	gasRawValue.NO2 = 0;
-	gasRawValue.VOC = 0;
+	gasValue = {0,0,0,0};
+	gasRawValue = {0,0,0,0};
 }
 
 struct gasRaw GasValue::get_gasRawValue() {
