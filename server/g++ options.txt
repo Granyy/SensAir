@@ -1,0 +1,1 @@
+-fmax-errors=3 -g -O0 -std=c++17 -Wall -Wextra -pedantic -Wcast-align -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wstrict-overflow -Wundef
