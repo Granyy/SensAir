@@ -16,6 +16,7 @@
 #include "esp_attr.h"
 #include "SensairBLE.h"
 #include "StandAloneTreatment.h"
+#include "Buzzer.h"
 
 
 using namespace std;
@@ -32,13 +33,14 @@ int cnt = 0; //A PROTEGER AVEC SEMAPHORE
 GasValue gasValue;
 
 void gas_task(void* arg) {
+	Buzzer buzzer;
 	GasTreatment gasTreatment;
 	gasTreatment.begin();
 	while (1) {
 		gasTreatment.treat_gas();
 		gasValue.set_gasValue(gasTreatment.get_gasValue());
 		gasValue.set_gasRawValue(gasTreatment.get_gasRawValue());
-		vTaskDelay(10000/portTICK_RATE_MS);
+		vTaskDelay(5000/portTICK_RATE_MS);
 	}
 }
 

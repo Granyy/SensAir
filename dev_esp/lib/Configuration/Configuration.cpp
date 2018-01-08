@@ -35,6 +35,13 @@ void Timer_config() {
 	ledc_timer.speed_mode = LEDRGB_MODE;
 	ledc_timer.timer_num = LEDRGB_TIMER;
     ledc_timer_config(&ledc_timer);
+
+	ledc_timer_config_t buzzer_timer;
+	buzzer_timer.bit_num = LEDC_TIMER_10_BIT,
+	buzzer_timer.freq_hz = BUZZER_FREQ,
+	buzzer_timer.speed_mode = BUZZER_MODE;
+	buzzer_timer.timer_num = BUZZER_TIMER;
+    ledc_timer_config(&buzzer_timer);
 }
 
 
