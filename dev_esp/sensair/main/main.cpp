@@ -33,7 +33,6 @@ int cnt = 0; //A PROTEGER AVEC SEMAPHORE
 GasValue gasValue;
 
 void gas_task(void* arg) {
-	Buzzer buzzer;
 	GasTreatment gasTreatment;
 	gasTreatment.begin();
 	while (1) {

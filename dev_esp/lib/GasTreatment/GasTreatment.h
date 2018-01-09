@@ -16,9 +16,10 @@
 #include "GroveGasSensor.h"
 #include "MicsGasSensor.h"
 #include "GasValue.h"
+#include "Buzzer.h"
 
 #define map_gas(x, in_min, in_max, out_min, out_max) ((x) - (in_min)) * ((out_max) - (out_min)) / ((in_max) - (in_min)) + (out_min)
-
+#define CO_LIMIT 50
 
 using namespace std;
 
@@ -27,6 +28,7 @@ class GasTreatment {
 	private :
 		GroveGasSensor groveGasSensor;
 		MicsGasSensor micsGasSensor;
+		Buzzer buzzer;
 		float CO = -1;
 		float CO2 = -1;
 		float VOC = -1;

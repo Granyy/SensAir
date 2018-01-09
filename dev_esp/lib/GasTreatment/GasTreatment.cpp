@@ -1,5 +1,5 @@
 /******************************************************************************/
-/*        @TITLE : GasTreatment.cpp                                            */
+/*        @TITLE : GasTreatment.cpp                                           */
 /*      @VERSION : 1.0                                                        */
 /*     @CREATION : dec 27, 2017                                               */
 /* @MODIFICATION : dec 27, 2017                                               */
@@ -23,6 +23,9 @@ void GasTreatment::read_gas() {
 
 void GasTreatment::treat_gas() {
 	read_gas();
+	if (CO > CO_LIMIT) {
+		buzzer.beep();
+	}
 	gasRawValue.CO = CO;
 	gasRawValue.CO2 = CO2;
 	gasRawValue.NO2 = NO2;
