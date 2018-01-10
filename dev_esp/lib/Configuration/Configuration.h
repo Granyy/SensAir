@@ -15,11 +15,12 @@
 #include "driver/i2c.h"
 #include "driver/ledc.h"
 #include "driver/gpio.h"
+#include "driver/adc.h"
 
 //// I2C CONFIGURATIONS
 #define I2C_SPEED       100000
 #define I2C_SDA_PIN     GPIO_NUM_21
-#define I2C_SCL_PIN     GPIO_NUM_26
+#define I2C_SCL_PIN     GPIO_NUM_22
 #define I2C_INTERFACE   I2C_NUM_0
 
 //// LEDRGB CONFIGURATIONS
@@ -44,11 +45,22 @@
 #define GPIO_INPUT_IO_0     GPIO_NUM_15
 #define GPIO_INPUT_PIN_SEL  (1<<GPIO_INPUT_IO_0)
 
+/// PWR LED CONFIGURATIONS
+#define PWR_LED_GPIO GPIO_NUM_4
+
+/// BLE LED CONFIGURATIONS
+#define BLE_LED_GPIO GPIO_NUM_19
+
+/// ADC CONFIGURATIONS
+#define ADC_CHANNEL ADC1_CHANNEL_6
+
 void configure();
 
 void I2C_config();
 void Timer_config();
 void ISR_config();
+void Led_config();
+void ADC_config();
 
 
 #endif

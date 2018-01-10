@@ -13,6 +13,8 @@ void configure() {
 	ISR_config();
 	I2C_config();
 	Timer_config();
+	Led_config();
+	ADC_config();
 }
 
 void I2C_config() {
@@ -20,8 +22,8 @@ void I2C_config() {
 	conf.mode = I2C_MODE_MASTER;
 	conf.sda_io_num = (gpio_num_t)I2C_SDA_PIN;
 	conf.scl_io_num = (gpio_num_t)I2C_SCL_PIN;
-	conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-	conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+	conf.sda_pullup_en = GPIO_PULLUP_DISABLE;
+	conf.scl_pullup_en = GPIO_PULLUP_DISABLE;
 	conf.master.clk_speed = I2C_SPEED;
 	i2c_param_config(I2C_INTERFACE, &conf);
 	i2c_driver_install(I2C_INTERFACE, I2C_MODE_MASTER, 0, 0, 0);
@@ -44,6 +46,20 @@ void Timer_config() {
     ledc_timer_config(&buzzer_timer);
 }
 
+void Led_config() {
+    gpio_pad_select_gpio(PWR_LED_GPIO);
+    gpio_set_direction(PWR_LED_GPIO, GPIO_MODE_OUTPUT);
+    gpio_set_level(PWR_LED_GPIO, 1);
+
+    gpio_pad_select_gpio(BLE_LED_GPIO);
+    gpio_set_direction(BLE_LED_GPIO, GPIO_MODE_OUTPUT);
+    gpio_set_level(BLE_LED_GPIO, 0);
+}
+
+void ADC_config() {
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(ADC_CHANNEL, ADC_ATTEN_DB_0);
+}
 
 
 void ISR_config() {

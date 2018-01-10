@@ -17,6 +17,9 @@
 #include "SensairBLE.h"
 #include "StandAloneTreatment.h"
 #include "Buzzer.h"
+#include "driver/adc.h"
+#include "Battery.h"
+#include "BatteryValue.h"
 
 
 using namespace std;
@@ -31,6 +34,7 @@ SemaphoreHandle_t isrSemaphore = NULL;
 int cnt = 0; //A PROTEGER AVEC SEMAPHORE
 
 GasValue gasValue;
+BatteryValue batteryValue;
 
 void gas_task(void* arg) {
 	GasTreatment gasTreatment;
@@ -70,6 +74,16 @@ void run_server(void) {
 
 }
 
+void battery_task(void* arg) {
+	uint8_t batteryLevel;
+	Battery battery;
+	while (1) {
+		batteryLevel = battery.read_batteryLevel();
+		cout << "Battery Level: " <<(int)batteryLevel << endl;
+		batteryValue.set_batteryLevel(batteryLevel);
+		vTaskDelay(5000/portTICK_RATE_MS);
+	}
+}
 
 void app_main(void)
 {
@@ -78,5 +92,6 @@ void app_main(void)
     gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
 	xTaskCreate(&gas_task, "gas_task", 4096, NULL, 5, NULL);
 	xTaskCreate(&stand_alone_task, "stand_alone_task", 4096, NULL, 5, NULL);
+	xTaskCreate(&battery_task,"battery_task", 1024, NULL, 6, NULL);
 	run_server();
 }
