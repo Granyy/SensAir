@@ -1,7 +1,5 @@
-#include <esp_log.h>
 #include <iostream>
 #include <string>
-#include <Task.h>
 #include <sys/time.h>
 #include <sstream>
 #include "sdkconfig.h"
@@ -11,27 +9,20 @@
 #include "Configuration.h"
 #include "gpio.h"
 #include "GasTreatment.h"
-#include "LedRGB.h"
-#include <math.h>
 #include "esp_attr.h"
 #include "SensairBLE.h"
 #include "StandAloneTreatment.h"
-#include "Buzzer.h"
-#include "driver/adc.h"
 #include "Battery.h"
 #include "BatteryValue.h"
 
-
 using namespace std;
 
-
 extern "C" {
-   void app_main();
+void app_main();
 }
 
-
 SemaphoreHandle_t isrSemaphore = NULL;
-int cnt = 0; //A PROTEGER AVEC SEMAPHORE
+int cnt = 0;
 
 GasValue gasValue;
 BatteryValue batteryValue;
@@ -43,7 +34,7 @@ void gas_task(void* arg) {
 		gasTreatment.treat_gas();
 		gasValue.set_gasValue(gasTreatment.get_gasValue());
 		gasValue.set_gasRawValue(gasTreatment.get_gasRawValue());
-		vTaskDelay(5000/portTICK_RATE_MS);
+		vTaskDelay(5000 / portTICK_RATE_MS);
 	}
 }
 
@@ -54,23 +45,23 @@ void IRAM_ATTR gpio_isr_handler(void* arg) {
 	}
 }
 
-void stand_alone_task (void* arg) {
+void stand_alone_task(void* arg) {
 	LedRGB ledRGB;
-	struct gas _gasValue = {0,0,0,0};
-	 for(;;) {
-	    if(xSemaphoreTake(isrSemaphore,portMAX_DELAY) == pdTRUE) {
-	    	_gasValue = gasValue.get_gasValue();
-	    	display_color(_gasValue, ledRGB);
+	struct gas _gasValue = { 0, 0, 0, 0 };
+	for (;;) {
+		if (xSemaphoreTake(isrSemaphore,portMAX_DELAY) == pdTRUE) {
+			_gasValue = gasValue.get_gasValue();
+			display_color(_gasValue, ledRGB);
 			cnt = 0;
-	    }
-	  }
+		}
+	}
 
 }
 
 void run_server(void) {
-	MainBLEServer* pMainBleServer = new MainBLEServer();
+	MainBLEServer* pMainBleServer = new MainBLEServer(gasValue, batteryValue);
 	pMainBleServer->setStackSize(20000);
-	pMainBleServer->start(static_cast<void*>(&gasValue));
+	pMainBleServer->start();
 
 }
 
@@ -79,19 +70,19 @@ void battery_task(void* arg) {
 	Battery battery;
 	while (1) {
 		batteryLevel = battery.read_batteryLevel();
-		cout << "Battery Level: " <<(int)batteryLevel << endl;
+		cout << "Battery Level: " << (int) batteryLevel << endl;
 		batteryValue.set_batteryLevel(batteryLevel);
-		vTaskDelay(5000/portTICK_RATE_MS);
+		vTaskDelay(5000 / portTICK_RATE_MS);
 	}
 }
 
-void app_main(void)
-{
+void app_main(void) {
 	configure();
 	isrSemaphore = xSemaphoreCreateBinary();
-    gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
+	gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler,
+			(void*) GPIO_INPUT_IO_0);
 	xTaskCreate(&gas_task, "gas_task", 4096, NULL, 5, NULL);
 	xTaskCreate(&stand_alone_task, "stand_alone_task", 4096, NULL, 5, NULL);
-	xTaskCreate(&battery_task,"battery_task", 1024, NULL, 6, NULL);
+	xTaskCreate(&battery_task, "battery_task", 1024, NULL, 6, NULL);
 	run_server();
 }

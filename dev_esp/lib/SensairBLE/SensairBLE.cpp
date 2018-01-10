@@ -37,6 +37,24 @@ void CallbackRawValue::onRead(BLECharacteristic *pCharacteristic) {
 	pCharacteristic->setValue(gasStr);
 }
 
+void CallbackBattery::onRead(BLECharacteristic *pCharacteristic) {
+	cout << "********** READ BATTERY " << endl;
+	uint8_t batteryValue = m_batteryValue.get_batteryLevel();
+	std::ostringstream os;
+	os << batteryValue;
+	pCharacteristic->setValue(os.str());
+}
+
+
+void CallbackBattery::onWrite(BLECharacteristic *pCharacteristic) {
+	std::string value = pCharacteristic->getValue();
+	if (value.length() > 0) {
+	        cout << "*********" << endl;
+	        cout << "WRITE " << value << endl;
+	        cout << "*********" << endl;
+	    }
+	}
+
 
 void CallbackRawValue::onWrite(BLECharacteristic *pCharacteristic) {
 std::string value = pCharacteristic->getValue();
@@ -80,8 +98,7 @@ void MainBLEServer::run(void *data) {
 
 	BLEDevice::init("SENSAIR");
 	BLEServer* pServer = BLEDevice::createServer();
-
-	GasValue* gasPtr = static_cast<GasValue*>(data);
+	pServer->setCallbacks(new MainBLEServerCallbacks());
 
 	BLEService* pServiceValue = pServer->createService("91bad492-b950-4226-aa2b-4ede9fa42f59");
 
@@ -89,14 +106,14 @@ void MainBLEServer::run(void *data) {
 		BLEUUID("0d563a58-196a-48ce-ace2-dfec78acc814"),
 		BLECharacteristic::PROPERTY_READ
 	);
-	pCharacteristicValue->setCallbacks(new CallbackValue(*gasPtr));
+	pCharacteristicValue->setCallbacks(new CallbackValue(_gasValue));
 	pCharacteristicValue->setValue("READ");
 
 	BLECharacteristic* pCharacteristicRaw = pServiceValue->createCharacteristic(
 		BLEUUID("01bf2093-f2d3-4fcc-8d2b-eda1667d96f4"),
 		BLECharacteristic::PROPERTY_READ
 	);
-	pCharacteristicRaw->setCallbacks(new CallbackRawValue(*gasPtr));
+	pCharacteristicRaw->setCallbacks(new CallbackRawValue(_gasValue));
 	pCharacteristicRaw->setValue("READ_RAW");
 	pServiceValue->start();
 
@@ -110,10 +127,30 @@ void MainBLEServer::run(void *data) {
 	pCharacteristicWrite->setValue("WRITE");
 	pServiceWrite->start();
 
+	BLEService* pServiceBattery = pServer->createService("db091a33-940e-4708-897d-6bff1650f275");
+	BLECharacteristic* pCharacteristicBattery = pServiceBattery->createCharacteristic(
+		BLEUUID("2e936fcd-702f-48d6-83bf-db32e57f7a8d"),
+		BLECharacteristic::PROPERTY_READ
+	);
+	pCharacteristicBattery->setCallbacks(new CallbackBattery(_batteryValue));
+	pCharacteristicBattery->setValue("BATTERY");
+	pServiceBattery->start();
+
 
 	BLEAdvertising* pAdvertising = pServer->getAdvertising();
 	pAdvertising->addServiceUUID(BLEUUID(pServiceValue->getUUID()));
 	pAdvertising->addServiceUUID(BLEUUID(pServiceWrite->getUUID()));
+	pAdvertising->addServiceUUID(BLEUUID(pServiceBattery->getUUID()));
 	pAdvertising->start();
 	delay(1000000);
 }
+
+
+void MainBLEServerCallbacks::onConnect(BLEServer* pServer) {
+	gpio_set_level(BLE_LED_GPIO, 1);
+}
+
+void MainBLEServerCallbacks::onDisconnect(BLEServer* pServer) {
+	gpio_set_level(BLE_LED_GPIO, 0);
+}
+
