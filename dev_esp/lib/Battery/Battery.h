@@ -20,6 +20,7 @@ using namespace std;
 class Battery {
 	private:
 		uint8_t batteryLevel = 0;
+		bool lowBattery = false;
 	public:
 		uint8_t read_batteryLevel();
 };
