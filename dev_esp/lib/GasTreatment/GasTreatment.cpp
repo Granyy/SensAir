@@ -22,18 +22,32 @@ void GasTreatment::read_gas() {
 }
 
 void GasTreatment::treat_gas() {
+	error = false;
 	read_gas();
 	if (CO > CO_LIMIT) {
 		buzzer.beep();
 	}
-	gasRawValue.CO = CO;
-	gasRawValue.CO2 = CO2;
-	gasRawValue.NO2 = NO2;
-	gasRawValue.VOC = VOC;
+	gasRawValue = {CO, CO2, NO2, VOC};
 	gasValue.CO=map_gas(CO, 0, 80, 0, 100);
+	if ((gasRawValue.CO == -1)|(gasValue.CO > 100)) {
+		gasValue.CO = 0;
+		error = true;
+	}
 	gasValue.CO2=map_gas(CO2, 400, 500, 0, 100);
+	if ((gasRawValue.CO2 == -1)|(gasValue.CO2 > 100)) {
+		gasValue.CO2 = 0;
+		error = true;
+	}
 	gasValue.NO2=map_gas(NO2,0.10,0.20,0,100);
+	if ((gasRawValue.NO2 == -1)|(gasValue.NO2 > 100)) {
+		gasValue.NO2 = 0;
+		error = true;
+	}
 	gasValue.VOC=map_gas(VOC,0,1000,0,100);
+	if ((gasRawValue.VOC == -1)|(gasValue.VOC > 100)) {
+		gasValue.VOC = 0;
+		error = true;
+	}
 	cout << "CO: "  << (int)gasValue.CO  << " | " << gasRawValue.CO  << endl;
 	cout << "CO2: " << (int)gasValue.CO2 << " | " << gasRawValue.CO2 << endl;
 	cout << "NO2: " << (int)gasValue.NO2 << " | " << gasRawValue.NO2 << endl;
@@ -47,3 +61,8 @@ struct gas GasTreatment::get_gasValue() {
 struct gasRaw GasTreatment::get_gasRawValue() {
 	return gasRawValue;
 }
+
+bool GasTreatment::get_status() {
+	return error;
+}
+

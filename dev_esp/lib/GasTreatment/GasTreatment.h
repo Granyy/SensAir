@@ -6,8 +6,6 @@
 /*       @AUTHOR : Leo GRANIER                                                */
 /******************************************************************************/
 
-
-
 #ifndef __GASTREATMENT_H__
 #define __GASTREATMENT_H__
 
@@ -23,9 +21,8 @@
 
 using namespace std;
 
-
 class GasTreatment {
-	private :
+	private:
 		GroveGasSensor groveGasSensor;
 		MicsGasSensor micsGasSensor;
 		Buzzer buzzer;
@@ -33,16 +30,17 @@ class GasTreatment {
 		float CO2 = -1;
 		float VOC = -1;
 		float NO2 = -1;
-		struct gas gasValue = {0,0,0,0};
-		struct gasRaw gasRawValue = {0,0,0,0};
+		struct gas gasValue = { 0, 0, 0, 0 };
+		struct gasRaw gasRawValue = { 0, 0, 0, 0 };
+		bool error;
 
-	public :
+	public:
 		void begin();
 		void read_gas();
 		void treat_gas();
 		struct gas get_gasValue();
 		struct gasRaw get_gasRawValue();
+		bool get_status();
 };
-
 
 #endif

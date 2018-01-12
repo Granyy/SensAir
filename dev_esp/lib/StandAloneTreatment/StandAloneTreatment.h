@@ -13,7 +13,7 @@
 
 #include <string>
 #include <iostream>
-#include "FreeRTOS.h"
+#include "freertos/FreeRTOS.h"
 #include <freertos/task.h>
 #include "GasValue.h"
 #include "LedRGB.h"
@@ -28,7 +28,7 @@ using namespace std;
 
 uint8_t get_average(struct gas _gasValue);
 void change_color_from_average(uint8_t gasAverage, LedRGB ledRGB);
-void display_color(struct gas _gasValue, LedRGB ledRGB);
+void display_color(struct gas _gasValue, LedRGB ledRGB, bool error);
 
 
 #endif

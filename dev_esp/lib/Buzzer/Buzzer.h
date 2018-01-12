@@ -13,18 +13,14 @@
 #include "driver/ledc.h"
 #include "Configuration.h"
 
-
-
 class Buzzer {
-    private:
-        ledc_channel_config_t channel;
-    public:
-        Buzzer();
-        void beep();
-        void set_duty(uint16_t duty);
-        void set_frequency(uint16_t frequency);
+	private:
+		ledc_channel_config_t channel;
+	public:
+		Buzzer();
+		void beep();
+		void set_duty(uint16_t duty);
+		void set_frequency(uint16_t frequency);
 };
-
-
 
 #endif

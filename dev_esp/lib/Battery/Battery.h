@@ -6,7 +6,6 @@
 /*       @AUTHOR : Leo GRANIER                                                */
 /******************************************************************************/
 
-
 #ifndef __BATTERY_H__
 #define __BATTERY_H__
 
@@ -19,11 +18,10 @@
 using namespace std;
 
 class Battery {
-private:
-	uint8_t batteryLevel = 0;
-public:
-	uint8_t read_batteryLevel();
+	private:
+		uint8_t batteryLevel = 0;
+	public:
+		uint8_t read_batteryLevel();
 };
-  
 
 #endif

@@ -6,8 +6,6 @@
 /*       @AUTHOR : Leo GRANIER                                                */
 /******************************************************************************/
 
-
-
 #ifndef __CONFIGURATION_H__
 #define __CONFIGURATION_H__
 
@@ -46,10 +44,10 @@
 #define GPIO_INPUT_PIN_SEL  (1<<GPIO_INPUT_IO_0)
 
 /// PWR LED CONFIGURATIONS
-#define PWR_LED_GPIO GPIO_NUM_4
+#define PWR_LED_GPIO GPIO_NUM_25
 
 /// BLE LED CONFIGURATIONS
-#define BLE_LED_GPIO GPIO_NUM_19
+#define BLE_LED_GPIO GPIO_NUM_26
 
 /// ADC CONFIGURATIONS
 #define ADC_CHANNEL ADC1_CHANNEL_6
@@ -61,6 +59,5 @@ void Timer_config();
 void ISR_config();
 void Led_config();
 void ADC_config();
-
 
 #endif

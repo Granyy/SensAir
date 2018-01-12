@@ -23,10 +23,15 @@ void change_color_from_average(uint8_t gasAverage, LedRGB ledRGB) {
 			else ledRGB.change_color(500, 255,0,0);
 }
 
-void display_color(struct gas _gasValue, LedRGB ledRGB) {
+void display_color(struct gas _gasValue, LedRGB ledRGB, bool error) {
 			ledRGB.change_color(500,BLUE);
 			ledRGB.change_color(500,SKY);
 			ledRGB.change_color(500,PURPLE);
+			if (error) {
+				ledRGB.change_color(100,ORANGE);
+				ledRGB.change_color(100,ORANGE);
+				ledRGB.change_color(100,ORANGE);
+			}
 			uint8_t gasAverage= get_average(_gasValue);
 			cout << "Average: " << (int)gasAverage << endl;
 			change_color_from_average(gasAverage, ledRGB);

@@ -20,6 +20,7 @@
 #define YELLOW 255,255,0
 #define PURPLE 255, 50, 255
 #define SKY 0,255,255
+#define ORANGE 255,125,0
 
 
 class LedRGB {

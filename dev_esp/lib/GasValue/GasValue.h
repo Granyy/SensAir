@@ -16,15 +16,15 @@
 struct gas {
     uint8_t CO;
     uint8_t CO2;
-    uint8_t VOC;
     uint8_t NO2;
+    uint8_t VOC;
 };
 
 struct gasRaw {
     float CO;
     float CO2;
-    float VOC;
     float NO2;
+    float VOC;
 };
 
 class GasValue {

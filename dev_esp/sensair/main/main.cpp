@@ -23,6 +23,7 @@ void app_main();
 
 SemaphoreHandle_t isrSemaphore = NULL;
 int cnt = 0;
+bool errorStatus = false;
 
 GasValue gasValue;
 BatteryValue batteryValue;
@@ -32,6 +33,7 @@ void gas_task(void* arg) {
 	gasTreatment.begin();
 	while (1) {
 		gasTreatment.treat_gas();
+		errorStatus = gasTreatment.get_status();
 		gasValue.set_gasValue(gasTreatment.get_gasValue());
 		gasValue.set_gasRawValue(gasTreatment.get_gasRawValue());
 		vTaskDelay(5000 / portTICK_RATE_MS);
@@ -51,7 +53,7 @@ void stand_alone_task(void* arg) {
 	for (;;) {
 		if (xSemaphoreTake(isrSemaphore,portMAX_DELAY) == pdTRUE) {
 			_gasValue = gasValue.get_gasValue();
-			display_color(_gasValue, ledRGB);
+			display_color(_gasValue, ledRGB, errorStatus);
 			cnt = 0;
 		}
 	}
@@ -83,6 +85,6 @@ void app_main(void) {
 			(void*) GPIO_INPUT_IO_0);
 	xTaskCreate(&gas_task, "gas_task", 4096, NULL, 5, NULL);
 	xTaskCreate(&stand_alone_task, "stand_alone_task", 4096, NULL, 5, NULL);
-	xTaskCreate(&battery_task, "battery_task", 1024, NULL, 6, NULL);
+	xTaskCreate(&battery_task, "battery_task", 2048, NULL, 6, NULL);
 	run_server();
 }
