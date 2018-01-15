@@ -32,8 +32,8 @@ public:
 private:
     GasValue& m_gasVal;
     struct gas gasValue;
-	void onRead(BLECharacteristic *pCharacteristic);
-    void onWrite(BLECharacteristic *pCharacteristic);
+	void onRead(BLECharacteristic *pCharacteristic) override;
+    void onWrite(BLECharacteristic *pCharacteristic) override;
 };
 
 class CallbackRawValue: public BLECharacteristicCallbacks {
@@ -43,7 +43,7 @@ private:
     GasValue& m_gasVal;
     struct gasRaw gasRawValue;
 	void onRead(BLECharacteristic *pCharacteristic) override;
-    void onWrite(BLECharacteristic *pCharacteristic);
+    void onWrite(BLECharacteristic *pCharacteristic) override;
 };
 
 class CallbackBattery: public BLECharacteristicCallbacks {
@@ -51,14 +51,14 @@ public:
 	CallbackBattery(BatteryValue& _batteryValue) : m_batteryValue(_batteryValue) {}
 private:
     BatteryValue& m_batteryValue;
-	void onRead(BLECharacteristic *pCharacteristic);
-    void onWrite(BLECharacteristic *pCharacteristic);
+	void onRead(BLECharacteristic *pCharacteristic) override;
+    void onWrite(BLECharacteristic *pCharacteristic) override;
 };
 
 class CallbackWrite: public BLECharacteristicCallbacks {
 	private :
-		void onRead(BLECharacteristic *pCharacteristic);
-		void onWrite(BLECharacteristic *pCharacteristic);
+		void onRead(BLECharacteristic *pCharacteristic) override;
+		void onWrite(BLECharacteristic *pCharacteristic) override;
 };
 
 

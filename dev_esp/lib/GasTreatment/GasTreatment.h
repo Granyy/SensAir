@@ -17,8 +17,8 @@
 #include "Buzzer.h"
 
 #define map_gas(x, in_min, in_max, out_min, out_max) ((x) - (in_min)) * ((out_max) - (out_min)) / ((in_max) - (in_min)) + (out_min)
-#define CO_LIMIT 50
-
+#define CO_LIMIT_HIGH 12
+#define CO_LIMIT_LOW 8
 using namespace std;
 
 class GasTreatment {

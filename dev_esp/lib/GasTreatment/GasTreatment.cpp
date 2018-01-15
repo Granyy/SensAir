@@ -24,26 +24,26 @@ void GasTreatment::read_gas() {
 void GasTreatment::treat_gas() {
 	error = false;
 	read_gas();
-	if (CO > CO_LIMIT) {
+	if ((CO > CO_LIMIT_LOW)&(CO<CO_LIMIT_HIGH)) {
 		buzzer.beep();
 	}
 	gasRawValue = {CO, CO2, NO2, VOC};
-	gasValue.CO=map_gas(CO, 0, 80, 0, 100);
+	gasValue.CO=map_gas(CO, 1, 8, 0, 100);
 	if ((gasRawValue.CO == -1)|(gasValue.CO > 100)) {
 		gasValue.CO = 0;
 		error = true;
 	}
-	gasValue.CO2=map_gas(CO2, 400, 500, 0, 100);
+	gasValue.CO2=map_gas(CO2, 400, 1000, 0, 100);
 	if ((gasRawValue.CO2 == -1)|(gasValue.CO2 > 100)) {
 		gasValue.CO2 = 0;
 		error = true;
 	}
-	gasValue.NO2=map_gas(NO2,0.10,0.20,0,100);
+	gasValue.NO2=map_gas(NO2,0.10,0.30,0,100);
 	if ((gasRawValue.NO2 == -1)|(gasValue.NO2 > 100)) {
 		gasValue.NO2 = 0;
 		error = true;
 	}
-	gasValue.VOC=map_gas(VOC,0,1000,0,100);
+	gasValue.VOC=map_gas(VOC,0,600,0,100);
 	if ((gasRawValue.VOC == -1)|(gasValue.VOC > 100)) {
 		gasValue.VOC = 0;
 		error = true;
