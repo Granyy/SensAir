@@ -24,7 +24,7 @@ void GasTreatment::read_gas() {
 void GasTreatment::treat_gas() {
 	error = false;
 	read_gas();
-	if ((CO > CO_LIMIT_LOW)&(CO<CO_LIMIT_HIGH)) {
+	if ((CO > CO_LIMIT_LOW)&(CO<=CO_LIMIT_HIGH)) {
 		buzzer.beep();
 	}
 	gasRawValue = {CO, CO2, NO2, VOC};
