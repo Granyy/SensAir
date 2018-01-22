@@ -15,7 +15,6 @@ public:
 	Server(int port);
 	~Server();
 
-	//void poll();
 	void printMap();
 	void saveMap();
 

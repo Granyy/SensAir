@@ -19,12 +19,13 @@ Map::Map(const std::string& filename)
 				s.ignore(11);
 				s >> bucketSize;
 			} else {
-				double latitude, longitude, value;
-				char c1, c2;
-				s >> latitude >> c1 >> longitude >> c2 >> value;
+				Datapoint dp;
+				char c1, c2, c3, c4, c5;
+				s >> dp.coordinates.latitude >> c1 >> dp.coordinates.longitude >> c2
+					>> dp.value_CO >> c3 >> dp.value_CO2 >> c4 >> dp.value_NO2 >> c5 >> dp.value_VOC;
 
-				if (!s.fail() && c1 == ';' && c2 == ':') {
-					add(Datapoint{Coordinates{latitude, longitude}, value});
+				if (!s.fail() && c1 == ';' && c2 == ':' && c3 == ':' && c4 == ':' && c5 == ':') {
+					add(dp);
 				}
 			}
 
@@ -76,7 +77,11 @@ auto operator<<(std::ostream& os, const Map& map) -> std::ostream& {
 	os << "bucketSize=" << map.bucketSize << "\n\n";
 	for (auto& bucket : map.buckets) {
 		for (auto& datapoint : bucket.second) {
-			os << datapoint.coordinates << ":" << datapoint.value << "\n";
+			os << datapoint.coordinates
+				<< ":" << datapoint.value_CO
+				<< ":" << datapoint.value_CO2
+				<< ":" << datapoint.value_NO2
+				<< ":" << datapoint.value_VOC << "\n";
 		}
 	}
 	return os;
