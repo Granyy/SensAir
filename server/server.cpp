@@ -52,8 +52,8 @@ auto Server::payloadFromDatapoints(std::vector<Datapoint> datapoints) -> std::st
 		}
 
 		oss << "\n{ \"lat\": " << datapoint.coordinates.latitude
-			<< ", \"lon\": " << datapoint.coordinates.longitude
-			<< ", \"int\": " << datapoint.value << " }";
+			<< ", \"lng\": " << datapoint.coordinates.longitude
+			<< ", \"int\": " << datapoint.meanValue() << " }";
 
 		comma = true;
 	}
@@ -75,29 +75,44 @@ auto Server::datapointsFromPayload(const std::string& payload) -> std::optional<
 		iss >> c;
 		if (c == '{') {
 			Datapoint datapoint;
-
 			std::string str;
+
 			iss >> str;
 			if (iss.fail() || str != "\"lat\":") {
 				return {};
 			}
-
 			iss >> datapoint.coordinates.latitude;
 
 			iss >> c >> str;
-			if (iss.fail() || c != ',' || str != "\"lon\":") {
+			if (iss.fail() || c != ',' || str != "\"lng\":") {
 				return {};
 			}
-
 			iss >> datapoint.coordinates.longitude;
 
 			iss >> c >> str;
-			if (iss.fail() || c != ',' || str != "\"int\":") {
+			if (iss.fail() || c != ',' || str != "\"CO\":") {
 				return {};
 			}
+			iss >> datapoint.value_CO;
 
-			iss >> datapoint.value;
+			iss >> c >> str;
+			if (iss.fail() || c != ',' || str != "\"CO2\":") {
+				return {};
+			}
+			iss >> datapoint.value_CO2;
 
+			iss >> c >> str;
+			if (iss.fail() || c != ',' || str != "\"NO2\":") {
+				return {};
+			}
+			iss >> datapoint.value_NO2;
+
+			iss >> c >> str;
+			if (iss.fail() || c != ',' || str != "\"VOC\":") {
+				return {};
+			}
+			iss >> datapoint.value_VOC;
+			
 			iss >> c;
 			if (iss.fail() || c != '}') {
 				return {};
